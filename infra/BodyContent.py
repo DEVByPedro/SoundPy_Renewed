@@ -1,5 +1,6 @@
 import flet as ft
 import configs.MusicConfig      as musicConfg
+import os
 
 background_color = "#121212"
 card_color = "#1E1E1E"
@@ -35,7 +36,9 @@ def contents(page: ft.Page):
         border_radius=10)
 
     allSongsContainer = ft.Column([
-            musicConfig.get_all_musics()
+            ft.Row([
+                ft.Text(value=os.path.basename(musicConfg.get_all_musics()))
+            ], width=400, height=60)
         ],
         scroll=ft.ScrollMode.AUTO,
         expand=True
@@ -43,9 +46,16 @@ def contents(page: ft.Page):
 
     allSongs = ft.Container(
         content=ft.Column([
-            ft.Text("Todas as Musicas:", size=34, weight=ft.FontWeight.W_500),
+            ft.Row([
+                ft.Text("Todas as Musicas:", size=34, weight=ft.FontWeight.W_500),
+                ft.ElevatedButton(content=ft.Icon(ft.Icons.PLAY_ARROW,
+                                                  color="white"),
+                                  bgcolor="#121212",
+                                  width=50,
+                                  height=50)
+            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Column([
-                ft.Container(content=ft.Row([ft.Text("Nome"), ft.Text("Duração"), ft.Text("")], alignment=ft.MainAxisAlignment.SPACE_BETWEEN), padding=10, bgcolor=background_color)
+                ft.Container(content=ft.Row([ft.Text("Nome"), ft.Text("Duração"), ft.Text("Total: "+musicConfg.getDuration("all"))], alignment=ft.MainAxisAlignment.SPACE_BETWEEN), padding=10, bgcolor=background_color)
             ]),
             allSongsContainer
         ]),padding=20,
