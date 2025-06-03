@@ -1,9 +1,8 @@
 import json
 import os
 
+fileJSON = os.path.join(os.path.abspath("configs/intern"), "Song.json")
 def addMusic(path: str):
-    fileJSON = os.path.join(os.path.abspath("configs/intern"), "Song.json")
-    song = []
 
     if len(path) > 0:
         with open(fileJSON, "r") as file:
@@ -16,17 +15,16 @@ def addMusic(path: str):
         if index_of_song >= 0:
             return "The path given is already existent"
     except Exception as e:
-        song['paths'].append(path)
+        if path.endswith(".mp3"):
+            song['paths'].append(path)
 
-        with open(fileJSON, "w") as file:
-            json.dump(song, file, indent=4)
+            with open(fileJSON, "w") as file:
+                json.dump(song, file, indent=4)
 
-        return True
+            return True
 
 def getPathByIndex(index: int):
     try:
-        fileJson = os.path.join(os.path.abspath("configs/intern"), "Song.json")
-        sngPaths = []
         with open(fileJson, "r") as file:
             sngPaths = json.load(file)
 
