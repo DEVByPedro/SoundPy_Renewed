@@ -89,8 +89,10 @@ def contents(page: ft.Page):
 
             if os.path.basename(path).count("-") > 1:
                 name = basename.replace(basename[0:basename.index("-") + 2], "", 1)
-            if os.path.basename(path).count("(") == 1:
-                name = basename.replace(basename[basename.index("("):basename.index(")") + 1], "")
+            if os.path.basename(path).count("(") >= 1:
+                name = basename.replace(basename[basename.index("("):len(basename)], "")
+                if name.count("mp3"):
+                    name = basename.replace(".mp3", "")
 
             allSongsContainer.controls.append(
                 ft.Container(
@@ -100,11 +102,11 @@ def contents(page: ft.Page):
                             ft.Image(src=path.replace(".mp3", ".jpg"), width=50, height=50, fit=ft.ImageFit.COVER),
                             ft.Column([
                                 #Nome Musica
-                                ft.Text(str(nowId)+". "+name.replace(" .mp3", "")[:40]),
+                                ft.Text(str(nowId)+". "+name.replace(" .mp3", "")),
                                 # Artista
-                                 ft.Text("by "+name[:name.index(" -")])], width=300),]),
+                                 ft.Text("by "+name[:name.index(" -")])])], width=400),
                         # Duração Musica
-                        ft.Text(musicConfig.getIndividualDuration(path)),
+                        ft.Text(musicConfig.getIndividualDuration(path), width=40),
                         ft.ElevatedButton(content=ft.Icon(ft.Icons.PLAY_ARROW, color='white'), bgcolor="#0D0D0D", width=40, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=4), padding=10))],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                     ),
@@ -128,6 +130,14 @@ def contents(page: ft.Page):
     editItem = ft.PopupMenuItem(
         content=ft.Row([ft.Icon(ft.Icons.EDIT, color="white"), ft.Text("Editar Nome Playlist")]),
     )
+    checkBox = ft.Checkbox(
+                            width=20,
+                            height=20,
+                            visible=True,
+                            on_change=lambda e:{
+                                print("ativo") if e.data == 'true' else print("inativo")
+                            }
+                        )
 
     configPlaylistButton = ft.PopupMenuButton(
         content=ft.Container(
@@ -176,6 +186,15 @@ def contents(page: ft.Page):
                 ft.Row([
                     configPlaylistButton,
                     ft.ElevatedButton(
+                        content=ft.Row([ft.Icon(ft.Icons.DELETE, color="white"), ft.Text("Deletar Musica", color="white")]),
+                        height=40,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=3)),
+                        bgcolor=background_color,
+                        on_click=lambda e: {
+                            print(e)
+                        }
+                    ),
+                    ft.ElevatedButton(
                         content=ft.Row([ft.Icon(ft.Icons.ADD, color="white"), ft.Text("Add Music", color="white")]),
                         bgcolor=background_color,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=3), padding=10),
@@ -183,15 +202,17 @@ def contents(page: ft.Page):
                     )
                 ]),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+
             ft.Column([
                 ft.Container(content=ft.Row([
                     ft.Row([
-                        ft.Text("Nome")],
-                        width=250),
-                    ft.Text("Duração"),
+                        checkBox,
+                        ft.Text("Nome",width=200, text_align=ft.TextAlign.CENTER)],
+                        width=250, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    ft.Text("Duração", text_align=ft.TextAlign.CENTER),
                     ft.Text("")],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                    padding=ft.Padding(top=10,left=130,bottom=10,right=80),
+                    padding=ft.Padding(top=10,left=0,bottom=10,right=-100),
                     bgcolor=background_color,
                     margin=ft.Margin(top=20, left=0, right=0, bottom=0))
             ]),
