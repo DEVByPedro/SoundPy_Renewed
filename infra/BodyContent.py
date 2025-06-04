@@ -1,6 +1,12 @@
+import os.path
+from ctypes import \
+    windll
+
 import flet as ft
-import configs.MusicConfig      as musicConfg
-import os
+import tkinter as tk
+from tkinter import filedialog
+
+import configs.MusicConfig      as musicConfig
 
 background_color = "#121212"
 card_color = "#1E1E1E"
@@ -18,60 +24,122 @@ def change_hover(e):
 
 def contents(page: ft.Page):
 
-    carroselPlaylists = ft.Container(ft.Column([
-        ft.Text("Suas Playlists:", size=34, weight=ft.FontWeight.W_500),
-        ft.Row([
-            ft.Container(bgcolor="red", width=100, height=100),
-            ft.Container(bgcolor="red", width=100, height=100),
-            ft.Container(bgcolor="red", width=100, height=100),
-            ft.Container(bgcolor="red", width=100, height=100),
-            ft.Container(bgcolor="red", width=100, height=100),
-            ft.Container(bgcolor="red", width=100, height=100),
-            ft.Container(bgcolor="red", width=100, height=100),
-            ft.Container(bgcolor="red", width=100, height=100),
-            ft.Container(bgcolor="red", width=100, height=100),
-        ], scroll=ft.ScrollMode.ALWAYS)
-    ]), padding=20,
-        bgcolor=card_color,
-        border_radius=10)
+    def add_msc(e):
+        tki = tk.Tk()
+        tki.withdraw()
+        tki.attributes("-topmost", True)
 
-    allSongsContainer = ft.Column([
-            ft.Row([
-                ft.Text(value=os.path.basename(musicConfg.get_all_musics()))
-            ], width=400, height=60)
-        ],
+        file_path = filedialog.askopenfiles(title="Select a music", filetypes=[("MP3 Files", ".mp3")])
+        for file in file_path:
+            musicConfig.addMusic(file.name)
+
+        allSongsContainer.controls.clear()
+        insert_all_songs()
+
+        durTot.value = "Duração Total: "+musicConfig.getDuration()
+
+        durTot.update()
+        page.update()
+
+    allSongsContainer = ft.Column(
         scroll=ft.ScrollMode.AUTO,
         expand=True
     )
 
+    def insert_all_songs():
+
+        allPaths = musicConfig.get_all_musics()
+        for path in allPaths:
+
+            # Trimming path for visibility
+            basename = os.path.basename(path)
+            name = basename
+
+            if os.path.basename(path).count("-") > 1:
+                name = basename.replace(basename[0:basename.index("-") + 2], "", 1)
+            if os.path.basename(path).count("(") == 1:
+                name = basename.replace(basename[basename.index("("):basename.index(")") + 1], "")
+            updatedPath = path.replace(basename, name)
+
+            allSongsContainer.controls.append(
+                ft.Container(
+                    content=ft.Row([
+                        ft.Row([
+                            ft.Image(src=path.replace(".mp3", ".jpg"), width=50, height=50, fit=ft.ImageFit.COVER),
+                            ft.Column([
+                                ft.Text(name.replace(" .mp3", "")[:40]),
+                                 ft.Text("by "+name[:name.index(" -")])], width=300),]),
+                        # Duração Musica
+                        ft.Text(musicConfig.getIndividualDuration(path)),
+                        ft.ElevatedButton(content=ft.Icon(ft.Icons.PLAY_ARROW, color='white'), bgcolor="#0D0D0D", width=40, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=4), padding=10))],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                    ),
+                    on_hover=change_hover,
+                    bgcolor=foreground_color,
+                    height=70,
+                    padding=10,
+                    border_radius=5
+                )
+            )
+
+    insert_all_songs()
+
+    ft.Container(
+        content=allSongsContainer,
+        padding=10,
+    )
+
+    durTot = ft.Text("Duração Total: "+ musicConfig.getDuration())
+
     allSongs = ft.Container(
         content=ft.Column([
             ft.Row([
-                ft.Text("Todas as Musicas:", size=34, weight=ft.FontWeight.W_500),
-                ft.ElevatedButton(content=ft.Icon(ft.Icons.PLAY_ARROW,
-                                                  color="white"),
-                                  bgcolor="#121212",
-                                  width=50,
-                                  height=50)
+                ft.Column([
+                    ft.Text("Todas as Musicas:", size=34, weight=ft.FontWeight.W_500),
+                    durTot,
+                ]),
+
+                ft.Row([
+                    ft.ElevatedButton(
+                        content=ft.Row([ft.Icon(ft.Icons.DOWNLOAD, color="white")]),
+                        bgcolor=background_color,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=3), padding=10),
+                        width=40
+                    ),
+                    ft.ElevatedButton(
+                        content=ft.Row([ft.Icon(ft.Icons.ADD, color="white"), ft.Text("Add Music!", color="white")]),
+                        bgcolor=background_color,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=3), padding=10),
+                        on_click=add_msc
+                    )
+                ]),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Column([
-                ft.Container(content=ft.Row([ft.Text("Nome"), ft.Text("Duração"), ft.Text("Total: "+musicConfg.getDuration("all"))], alignment=ft.MainAxisAlignment.SPACE_BETWEEN), padding=10, bgcolor=background_color)
+                ft.Container(content=ft.Row([
+                    ft.Row([
+                        ft.Text("Nome")],
+                        width=250),
+                    ft.Text("Duração"),
+                    ft.Text("")],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    padding=ft.Padding(top=10,left=130,bottom=10,right=80),
+                    bgcolor=background_color,
+                    margin=ft.Margin(top=20, left=0, right=0, bottom=0))
             ]),
-            allSongsContainer
+             allSongsContainer
         ]),padding=20,
         margin=ft.Margin(top=20,left=0,right=0,bottom=0),
-        width=(page.width - ((40/100) * page.width)),
         bgcolor=card_color,
         border_radius=10,
         expand=True,
     )
 
     all = ft.Container(content=ft.Column([
-        carroselPlaylists,
         allSongs
     ]), bgcolor=background_color,
         border_radius=10,
-    width=page.width - ((40/100) * page.width),
     expand=True)
+
+    page.update()
 
     return all

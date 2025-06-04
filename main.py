@@ -1,6 +1,8 @@
 import json
+from sys import \
+    hash_info
+
 import setup.bin.InstallDependencies as installDependencies
-installDependencies.installDependencies()
 import configs.MusicConfig                   as musicConfig
 import os
 import time
