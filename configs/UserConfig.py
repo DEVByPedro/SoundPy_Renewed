@@ -34,3 +34,11 @@ def add_pfp(path: str):
             return True
         return "Invalid type of file. (Only accepts .jpg, .png and .jpeg)"
     return "The path given does not exists."
+def getUserName():
+    try:
+        with open(fileJSON, "r") as file:
+            user = json.load(file)
+
+        return user["name"]
+    except Exception as e:
+        return f"Error: {e}"

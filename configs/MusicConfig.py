@@ -34,13 +34,12 @@ def getPathByIndex(index: int):
         return "No path found on index: " + str(index)
 def deleteByIndex(index: int):
     try:
-        fileJson = os.path.join(os.path.abspath("configs/intern"), "Song.json")
-        sngPaths = []
         with open(fileJSON, "r") as file:
             sngPaths = json.load(file)
 
         sngPaths['paths'].pop(index)
-        with open(fileJson, "w") as file:
+        sngPaths['duration'] -= MP3(sngPaths['paths'][index]).info.length
+        with open(fileJSON, "w") as file:
             json.dump(sngPaths, file, indent=4)
 
         return True
@@ -100,3 +99,14 @@ def getIndividualDuration(path: str):
             return f"{round(minutes):02d}:{round(seconds):02d}"
         return "Please, select a .mp3 file."
     return "Path given does not exists"
+def getIndexByPath(path:  str):
+    try:
+        with open(fileJSON, "r") as file:
+            songs = json.load(file)
+
+        for pathIndex in range(len(songs['paths'])):
+            if songs['paths'][pathIndex] == path:
+                return pathIndex
+
+    except Exception as e:
+        return f"Error: {e}"

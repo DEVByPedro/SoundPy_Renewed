@@ -1,14 +1,9 @@
-import json
-from sys import \
-    hash_info
-
-import setup.bin.InstallDependencies as installDependencies
 import configs.MusicConfig                   as musicConfig
-import os
-import time
 import configs.UserConfig                      as userConfig
 import infra.BodyContent                       as bodyContent
 import flet as ft
+
+print(musicConfig.getPathByIndex(0))
 
 def main(page: ft.Page):
     page.padding = 0
@@ -22,7 +17,6 @@ def main(page: ft.Page):
     icon_color = "#E0E0E0"
     equalizer_bar = "#6C6C6C"
     foreground_color = "#141414"
-
 
     buttons = []
     text_refs = []
@@ -148,7 +142,7 @@ def main(page: ft.Page):
             content=set_user_pfp(),
             items= [
                 ft.PopupMenuItem(
-                    content=ft.Row([ft.Text("Hello, User!"), userProfileButton], width=300, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    content=ft.Row([ft.Text(f"Hello, {userConfig.getUserName()}!"), userProfileButton], width=300, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                     mouse_cursor=ft.MouseCursor.BASIC,
                 )
             ],

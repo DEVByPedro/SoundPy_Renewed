@@ -1,7 +1,4 @@
 import os.path
-from ctypes import \
-    windll
-
 import flet as ft
 import tkinter as tk
 from tkinter import filedialog
@@ -18,12 +15,38 @@ icon_color = "#E0E0E0"
 equalizer_bar = "#6C6C6C"
 foreground_color = "#141414"
 
+
 def change_hover(e):
     e.control.bgcolor = button_hover if e.data == "true" else foreground_color
     e.control.update()
 
 def contents(page: ft.Page):
+    ytLink = ft.TextField()
 
+    modal = ft.AlertDialog(
+        modal=True,
+        open=False,
+        title=ft.Text("Paste yt link here:"),
+        content=ytLink,
+        actions=[
+            ft.ElevatedButton(
+                text="Ok",
+                on_click=lambda e: {
+                    print("Baixando"),
+                    page.close(modal)
+                }
+            ),
+            ft.ElevatedButton(
+                text="Cancel",
+                on_click=lambda e:{
+                    print("Cancelou"),
+                    page.close(modal)
+                }
+            )
+        ]
+    )
+
+    page.add(modal)
     def add_msc(e):
         tki = tk.Tk()
         tki.withdraw()
@@ -40,6 +63,14 @@ def contents(page: ft.Page):
 
         durTot.update()
         page.update()
+    def isPlaylist(e):
+        if currentPlaylistTitle.value != "Todas as Musicas:":
+            if editItem not in configPlaylistButton.items:
+                configPlaylistButton.items.append(editItem)
+        else:
+            if editItem in configPlaylistButton.items:
+                configPlaylistButton.items.remove(editItem)
+        page.update()
 
     allSongsContainer = ft.Column(
         scroll=ft.ScrollMode.AUTO,
@@ -50,6 +81,7 @@ def contents(page: ft.Page):
 
         allPaths = musicConfig.get_all_musics()
         for path in allPaths:
+            nowId=musicConfig.getIndexByPath(path)
 
             # Trimming path for visibility
             basename = os.path.basename(path)
@@ -59,15 +91,17 @@ def contents(page: ft.Page):
                 name = basename.replace(basename[0:basename.index("-") + 2], "", 1)
             if os.path.basename(path).count("(") == 1:
                 name = basename.replace(basename[basename.index("("):basename.index(")") + 1], "")
-            updatedPath = path.replace(basename, name)
 
             allSongsContainer.controls.append(
                 ft.Container(
                     content=ft.Row([
                         ft.Row([
+                            # Foto Musica
                             ft.Image(src=path.replace(".mp3", ".jpg"), width=50, height=50, fit=ft.ImageFit.COVER),
                             ft.Column([
-                                ft.Text(name.replace(" .mp3", "")[:40]),
+                                #Nome Musica
+                                ft.Text(str(nowId)+". "+name.replace(" .mp3", "")[:40]),
+                                # Artista
                                  ft.Text("by "+name[:name.index(" -")])], width=300),]),
                         # Duração Musica
                         ft.Text(musicConfig.getIndividualDuration(path)),
@@ -90,24 +124,59 @@ def contents(page: ft.Page):
     )
 
     durTot = ft.Text("Duração Total: "+ musicConfig.getDuration())
+    currentPlaylistTitle = ft.Text("Todas as Musicas:", size=34, weight=ft.FontWeight.W_500)
+    editItem = ft.PopupMenuItem(
+        content=ft.Row([ft.Icon(ft.Icons.EDIT, color="white"), ft.Text("Editar Nome Playlist")]),
+    )
+
+    configPlaylistButton = ft.PopupMenuButton(
+        content=ft.Container(
+            content=ft.Row([
+                ft.Icon(ft.Icons.SETTINGS_OUTLINED, color="white", size=20)
+            ]),
+            bgcolor=background_color,
+            border_radius=3,
+            padding=5
+        ),
+        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=3)),
+        width=30,
+        height=30,
+        items=[
+            editItem,
+            ft.PopupMenuItem(
+                content=ft.Row([
+                    ft.Icon(ft.Icons.DOWNLOAD, color='white'),
+                    ft.Text("Baixar Músicas")
+                ]),
+                on_click=lambda e: page.open(modal)
+            ),
+            ft.PopupMenuItem(
+                content=ft.Row([
+                    ft.Icon(ft.Icons.DELETE, color='white'),
+                    ft.Text("Excluir Playlist")
+                ]),
+                on_click=lambda e: page.open(modal)
+            ),
+        ],
+        on_open=lambda e: isPlaylist(e)
+    )
 
     allSongs = ft.Container(
         content=ft.Column([
             ft.Row([
-                ft.Column([
-                    ft.Text("Todas as Musicas:", size=34, weight=ft.FontWeight.W_500),
-                    durTot,
+                ft.Row([
+                    ft.Container(content=ft.Image(src=musicConfig.getPathByIndex(0).replace(".mp3", ".jpg"), width=100, height=100, fit=ft.ImageFit.COVER)),
+                    ft.Column([
+                        currentPlaylistTitle,
+                        durTot,
+                    ]),
+
                 ]),
 
                 ft.Row([
+                    configPlaylistButton,
                     ft.ElevatedButton(
-                        content=ft.Row([ft.Icon(ft.Icons.DOWNLOAD, color="white")]),
-                        bgcolor=background_color,
-                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=3), padding=10),
-                        width=40
-                    ),
-                    ft.ElevatedButton(
-                        content=ft.Row([ft.Icon(ft.Icons.ADD, color="white"), ft.Text("Add Music!", color="white")]),
+                        content=ft.Row([ft.Icon(ft.Icons.ADD, color="white"), ft.Text("Add Music", color="white")]),
                         bgcolor=background_color,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=3), padding=10),
                         on_click=add_msc
@@ -135,7 +204,7 @@ def contents(page: ft.Page):
     )
 
     all = ft.Container(content=ft.Column([
-        allSongs
+        allSongs,
     ]), bgcolor=background_color,
         border_radius=10,
     expand=True)
