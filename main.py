@@ -151,8 +151,8 @@ def main(page: ft.Page):
 
     # Top Bar
     topContents = [
-        ft.Text("Welcome"),
-        ft.TextField(border_color="white", width=550, hint_text="Search Musics"),
+        ft.Text(width=80),
+        ft.TextField(border_color="white", width=550, hint_text="Procurar Musicas"),
         userProfile
     ]
 
