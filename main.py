@@ -3,8 +3,6 @@ import configs.UserConfig                      as userConfig
 import infra.BodyContent                       as bodyContent
 import flet as ft
 
-print(musicConfig.getPathByIndex(0))
-
 def main(page: ft.Page):
     page.padding = 0
 
@@ -172,7 +170,7 @@ def main(page: ft.Page):
         bgcolor=background_color,
         expand=True,
         margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
-        content=bodyContent.contents(page),
+        content=bodyContent.AllSongs(page),
         padding=10
     )
 

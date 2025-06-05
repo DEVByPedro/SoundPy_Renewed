@@ -37,8 +37,8 @@ def deleteByIndex(index: int):
         with open(fileJSON, "r") as file:
             sngPaths = json.load(file)
 
-        sngPaths['paths'].pop(index)
         sngPaths['duration'] -= MP3(sngPaths['paths'][index]).info.length
+        sngPaths['paths'].pop(index)
         with open(fileJSON, "w") as file:
             json.dump(sngPaths, file, indent=4)
 
