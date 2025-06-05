@@ -139,16 +139,50 @@ def AllSongs(page: ft.Page):
                     content=ft.Row([
                         ft.Row([
                             music_checkbox,
+                            ft.ElevatedButton(
+                                width=30,
+                                content=ft.Icon(ft.Icons.PLAY_ARROW, color="white", size=20),
+                                style=ft.ButtonStyle(
+                                    bgcolor={
+                                        ft.ControlState.HOVERED: "transparent",
+                                        ft.ControlState.FOCUSED: "transparent",
+                                        ft.ControlState.PRESSED: "transparent",
+                                        ft.ControlState.DEFAULT: "transparent"
+                                    },overlay_color={
+                                        ft.ControlState.HOVERED: "transparent",
+                                        ft.ControlState.FOCUSED: "transparent",
+                                        ft.ControlState.PRESSED: "transparent"
+                                    },
+                                    elevation={"hovered": 0, "default": 0},
+                                    padding=ft.Padding(top=0, left=0, right=5, bottom=0)
+                                )
+                            ),
                             # Foto Musica
                             playlistImage,
                             ft.Column([
                                 #Nome Musica
-                                ft.Text(str(nowId)+". "+name.replace(" .mp3", "")),
+                                ft.Text(str(nowId + 1)+". "+name.replace(" .mp3", "")),
                                 # Artista
                                  ft.Text("by "+name[:name.index(" -")])])], width=400),
                         # Duração Musica
                         ft.Text(musicConfig.getIndividualDuration(path), width=40),
-                        ft.ElevatedButton(content=ft.Icon(ft.Icons.PLAY_ARROW, color='white'), bgcolor="#0D0D0D", width=40, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=4), padding=10))],
+                        ft.ElevatedButton(
+                            content=ft.Icon(ft.Icons.EXPAND_MORE_OUTLINED, color='white', size=20),
+                            width=40,
+                            style=ft.ButtonStyle(
+                                bgcolor={
+                                    ft.ControlState.HOVERED: "transparent",
+                                    ft.ControlState.FOCUSED: "transparent",
+                                    ft.ControlState.PRESSED: "transparent",
+                                    ft.ControlState.DEFAULT: "transparent"
+                                },
+                                overlay_color={
+                                    ft.ControlState.HOVERED: "transparent",
+                                    ft.ControlState.FOCUSED: "transparent",
+                                    ft.ControlState.PRESSED: "transparent"
+                                },
+                                elevation={"hovered": 0, "default": 0},
+                            ))],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                     ),
                     on_hover=change_hover,

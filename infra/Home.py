@@ -1,0 +1,24 @@
+import flet as ft
+
+background_color = "#121212"
+card_color = "#1E1E1E"
+text_primary = "#FFFFFF"
+text_secondary = "#C7C7C7"
+button_hover = "#2C2C2C"
+border_color = "#404040"
+icon_color = "#E0E0E0"
+equalizer_bar = "#6C6C6C"
+foreground_color = "#141414"
+
+def body(page: ft.Page):
+
+
+
+    mainContent = ft.Container(
+        content=ft.Text("Olá", size=45, color="white"),
+        bgcolor=background_color,
+        width=page.width,
+        expand=True
+    )
+
+    return mainContent

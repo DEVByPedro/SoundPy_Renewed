@@ -1,0 +1,22 @@
+{
+    "playlistNames": [
+        [
+            1,
+            "Todas as Musicas"
+        ],
+        [
+            2,
+            "Teste"
+        ]
+    ],
+    "playlistMusics": [
+        [
+            1,
+            "All Songs"
+        ],
+        [
+            2,
+            []
+        ]
+    ]
+}

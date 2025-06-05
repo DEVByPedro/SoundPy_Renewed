@@ -1,7 +1,11 @@
-import configs.MusicConfig                   as musicConfig
+import configs.MusicConfig                    as musicConfig
 import configs.UserConfig                      as userConfig
-import infra.BodyContent                       as bodyContent
+import configs.PlaylistConfig                 as playlistConfig
+import infra.BodyContent                        as bodyContent
+import infra.Home                                    as homePage
 import flet as ft
+
+playlistConfig.remove_playlist_by_name("Teste")
 
 def main(page: ft.Page):
     page.padding = 0
@@ -170,7 +174,8 @@ def main(page: ft.Page):
         bgcolor=background_color,
         expand=True,
         margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
-        content=bodyContent.AllSongs(page),
+        #content=bodyContent.AllSongs(page),
+        content=homePage.body(page),
         padding=10
     )
 
