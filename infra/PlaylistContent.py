@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 
 import configs.MusicConfig      as musicConfig
+import configs.PlaylistConfig    as playlistConfig
 
 background_color = "#121212"
 card_color = "#1E1E1E"
@@ -15,12 +16,11 @@ icon_color = "#E0E0E0"
 equalizer_bar = "#6C6C6C"
 foreground_color = "#141414"
 
-
 def change_hover(e):
     e.control.bgcolor = button_hover if e.data == "true" else foreground_color
     e.control.update()
 
-def AllSongs(page: ft.Page):
+def AllPlaylistSongs(page: ft.Page, id):
     ytLink = ft.TextField()
 
     modal = ft.AlertDialog(
@@ -224,9 +224,8 @@ def AllSongs(page: ft.Page):
         content=allSongsContainer,
         padding=10,
     )
-
     durTot = ft.Text("Duração: "+ musicConfig.getDuration())
-    currentPlaylistTitle = ft.Text("Todas as Musicas:", size=34, weight=ft.FontWeight.W_500)
+    currentPlaylistTitle = ft.Text(playlistConfig.getPlaylistNameByIndex(id)+":", size=34, weight=ft.FontWeight.W_500)
 
     configPlaylistButton = ft.PopupMenuButton(
         content=ft.Container(

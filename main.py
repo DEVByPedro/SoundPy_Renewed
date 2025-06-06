@@ -5,7 +5,7 @@ import infra.BodyContent                        as bodyContent
 import infra.Home                                    as homePage
 import flet as ft
 
-playlistConfig.remove_playlist_by_name("Teste")
+
 
 def main(page: ft.Page):
     page.padding = 0
@@ -23,7 +23,70 @@ def main(page: ft.Page):
     buttons = []
     text_refs = []
 
+    playlists_buttons = []
+    submenu = ft.Column(controls=playlists_buttons, opacity=1.0, animate_opacity=300)
+
+    expanded = False
+
+    criarPlaylistButton = ft.ElevatedButton(
+        text="Criar Nova Playlist",
+        bgcolor=card_color,
+        color="white",
+        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
+        height=40,
+        width=250
+    )
+
+    allSongs = ft.ElevatedButton(
+                content=ft.Container(
+                    content=ft.Row(
+                        [ft.Icon(ft.Icons.MY_LIBRARY_MUSIC, size=25, color="white"),
+                         ft.Column([
+                             ft.Text(value="All Songs", color="white", size=12),
+                             ft.Text(value="Duração: "+musicConfig.getDuration(), color="grey", size=10)
+                         ], alignment=ft.alignment.center_left)]
+                    ),
+                    alignment=ft.alignment.center_left,
+                    expand=True,
+                    padding=6
+                ),
+                style=ft.ButtonStyle(
+                    bgcolor=card_color,
+                    shape=ft.RoundedRectangleBorder(radius=5),
+                    overlay_color=button_hover,
+                    padding=8
+                ),
+                width=250,
+                height=50,
+                animate_scale=200,
+                on_click= lambda e: show_all_msc(e),
+            )
+
+    def upgrade_playlist():
+        playlists_buttons.clear()
+        playlists_buttons.append(criarPlaylistButton)
+        for playlist in range(len(playlistConfig.get_all_playlists())):
+            button = ft.ElevatedButton(
+                content=ft.Row([
+                    ft.Icon(ft.Icons.MUSIC_NOTE_ROUNDED),
+                    ft.Column([
+                        ft.Text(value=playlistConfig.getPlaylistNameByIndex(playlist+1), size=12),
+                        ft.Text("Duração: "+playlistConfig.getDuration(playlist+1), size=10, color="grey")
+                    ]),
+                ]),
+                color="white",
+                bgcolor=card_color,
+                height=50,
+                width=250,
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
+                on_click=lambda e, playlist_id=playlist+1: playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page)
+            )
+
+            playlists_buttons.append(button)
+        submenu.controls = playlists_buttons
+        page.update()
     def toggle_sidebar(e):
+        nonlocal  expanded
         if e.data == "true":
             sidebar.bgcolor=foreground_color
             for txt in text_refs:
@@ -33,6 +96,10 @@ def main(page: ft.Page):
                 btn.width = 180
             sidebar.width = 200
         else:
+            expanded = False
+            submenu.visible = False
+            for btn in submenu.controls:
+                btn.opacity = 0.0
             sidebar.bgcolor=foreground_color
             for btn in buttons:
                 btn.width = 40
@@ -42,11 +109,35 @@ def main(page: ft.Page):
             sidebar.width = 60
         page.update()
     def toggle_menu(e):
-        print("Método ainda não construído")
+        nonlocal expanded
+        expanded = not expanded
+
+        if expanded:
+            upgrade_playlist()
+            submenu.visible = True
+            submenu.opacity = 1.0
+            submenu.animate_opacity = 300
+            for btn in submenu.controls:
+                btn.visible = True
+                btn.opacity = 1.0
+                btn.animate_opacity = 300
+        else:
+            submenu.opacity = 0.0
+            submenu.animate_opacity = 300
+            for btn in submenu.controls:
+                btn.visible = False
+                btn.opacity = 0.0
+                btn.animate_opacity = 300
+
+        page.update()
     def show_all_fav(e):
         print("Método ainda não construído")
+    def show_mainMenu(e):
+        body.content=homePage.body(page)
+        page.update()
     def show_all_msc(e):
-        print("Método ainda não construído")
+        body.content=bodyContent.AllSongs(page)
+        page.update()
     def create_hover_handler(txt, icon):
             def handle_hover(e):
                 txt.color = text_secondary if e.data == "true" else text_primary
@@ -71,9 +162,10 @@ def main(page: ft.Page):
             changeButton.update()
 
     menu_items = [
-        (ft.Text(value=" - All Songs", weight=700), ft.Icon(ft.Icons.MY_LIBRARY_MUSIC, size=20, color="white"), lambda e: show_all_msc(e)),
-        (ft.Text(value=" - Fav. Songs", weight=700), ft.Icon(ft.Icons.BOOKMARK_ADD_SHARP, size=20, color="white"), lambda e: show_all_fav(e)),
-        (ft.Text(value=" - Playlists", weight=700), ft.Icon(ft.Icons.PLAYLIST_PLAY_SHARP, size=20, color="white"), lambda e: toggle_menu(e)),
+        (ft.Text(value="Home", weight=700), ft.Icon(ft.Icons.HOME, size=20, color="white"), lambda e: show_mainMenu(e)),
+        #(ft.Text(value="All Songs", weight=700), ft.Icon(ft.Icons.MY_LIBRARY_MUSIC, size=20, color="white"), lambda e: show_all_msc(e)),
+        (ft.Text(value="Fav. Songs", weight=700), ft.Icon(ft.Icons.BOOKMARK_ADD_SHARP, size=20, color="white"), lambda e: show_all_fav(e)),
+        (ft.Text(value="Playlists", weight=700), ft.Icon(ft.Icons.PLAYLIST_PLAY_SHARP, size=20, color="white"), lambda e: toggle_menu(e)),
     ]
 
     for label, icon, action in menu_items:
@@ -111,6 +203,7 @@ def main(page: ft.Page):
                 on_hover=create_hover_handler(text, icon)
             )
         )
+    buttons.append(submenu)
 
     sidebar = ft.Container(
         content=ft.Column(buttons),
@@ -174,7 +267,6 @@ def main(page: ft.Page):
         bgcolor=background_color,
         expand=True,
         margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
-        #content=bodyContent.AllSongs(page),
         content=homePage.body(page),
         padding=10
     )
