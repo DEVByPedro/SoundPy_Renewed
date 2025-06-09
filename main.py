@@ -5,8 +5,6 @@ import infra.BodyContent                        as bodyContent
 import infra.Home                                    as homePage
 import flet as ft
 
-
-
 def main(page: ft.Page):
     page.padding = 0
 
@@ -28,39 +26,42 @@ def main(page: ft.Page):
 
     expanded = False
 
+    playlist_modal = ft.AlertDialog(
+        open=False,
+        modal=True,
+        title=ft.Text("Criar Playlist:"),
+        content=ft.TextField(hint_text="Nome da Playlist", border_color=text_primary),
+        bgcolor=card_color,
+        actions=[
+            ft.ElevatedButton(
+                text="Criar",
+                bgcolor=foreground_color,
+                color="white",
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
+                on_click=lambda e: [
+                    playlistConfig.add_playlist(playlist_modal.content.value),
+                    page.close(playlist_modal),
+                    upgrade_playlist(),
+                ],
+            ),
+            ft.ElevatedButton("Cancel",
+                              color="white",
+                              on_click=lambda e: page.close(playlist_modal),
+                              style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2))),
+        ]
+    )
+
+    page.add(playlist_modal)
+
     criarPlaylistButton = ft.ElevatedButton(
         text="Criar Nova Playlist",
         bgcolor=card_color,
         color="white",
         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
         height=40,
-        width=250
+        width=250,
+        on_click=lambda e: page.open(playlist_modal)
     )
-
-    allSongs = ft.ElevatedButton(
-                content=ft.Container(
-                    content=ft.Row(
-                        [ft.Icon(ft.Icons.MY_LIBRARY_MUSIC, size=25, color="white"),
-                         ft.Column([
-                             ft.Text(value="All Songs", color="white", size=12),
-                             ft.Text(value="Duração: "+musicConfig.getDuration(), color="grey", size=10)
-                         ], alignment=ft.alignment.center_left)]
-                    ),
-                    alignment=ft.alignment.center_left,
-                    expand=True,
-                    padding=6
-                ),
-                style=ft.ButtonStyle(
-                    bgcolor=card_color,
-                    shape=ft.RoundedRectangleBorder(radius=5),
-                    overlay_color=button_hover,
-                    padding=8
-                ),
-                width=250,
-                height=50,
-                animate_scale=200,
-                on_click= lambda e: show_all_msc(e),
-            )
 
     def upgrade_playlist():
         playlists_buttons.clear()
@@ -135,9 +136,6 @@ def main(page: ft.Page):
     def show_mainMenu(e):
         body.content=homePage.body(page)
         page.update()
-    def show_all_msc(e):
-        body.content=bodyContent.AllSongs(page)
-        page.update()
     def create_hover_handler(txt, icon):
             def handle_hover(e):
                 txt.color = text_secondary if e.data == "true" else text_primary
@@ -163,7 +161,6 @@ def main(page: ft.Page):
 
     menu_items = [
         (ft.Text(value="Home", weight=700), ft.Icon(ft.Icons.HOME, size=20, color="white"), lambda e: show_mainMenu(e)),
-        #(ft.Text(value="All Songs", weight=700), ft.Icon(ft.Icons.MY_LIBRARY_MUSIC, size=20, color="white"), lambda e: show_all_msc(e)),
         (ft.Text(value="Fav. Songs", weight=700), ft.Icon(ft.Icons.BOOKMARK_ADD_SHARP, size=20, color="white"), lambda e: show_all_fav(e)),
         (ft.Text(value="Playlists", weight=700), ft.Icon(ft.Icons.PLAYLIST_PLAY_SHARP, size=20, color="white"), lambda e: toggle_menu(e)),
     ]
@@ -212,7 +209,7 @@ def main(page: ft.Page):
         alignment=ft.alignment.center_left,
         padding=ft.Padding(top=10, right=0, left=10, bottom=0),
         animate=ft.Animation(200, "easeInOut"),
-        on_hover=toggle_sidebar
+        on_hover=toggle_sidebar,
     )
 
     changeButton = ft.ElevatedButton(content= ft.Icon(ft.Icons.EDIT, color="white"),
@@ -265,20 +262,22 @@ def main(page: ft.Page):
 
     body = ft.Container(
         bgcolor=background_color,
-        expand=True,
         margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
-        content=homePage.body(page),
-        padding=10
+        content=ft.Container(homePage.body(page)),
+        height=page.window.height - 10,
+        padding=10,
+        expand=True
     )
 
     layout = ft.Row([
-        sidebar,
         ft.Column([
             topbar,
-            body
-        ],
-        expand=True)],
-    expand=True)
+            ft.Row([
+                sidebar,
+                body,
+            ], expand=True),
+        ], expand=True),
+    ],expand=True)
 
     page.add(layout)
 

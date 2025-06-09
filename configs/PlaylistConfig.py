@@ -3,7 +3,7 @@ import os
 from mutagen.mp3 import MP3
 
 import configs.MusicConfig as musicConfig
-import infra.BodyContent as bodyContent
+import infra.BodyContent     as bodyContent
 import infra.PlaylistContent as playlistContent
 
 fileJSON = os.path.join(os.path.abspath("configs/intern"), "Playlist.json")
@@ -30,7 +30,6 @@ def remove_playlist_by_name(name: str):
             playlist['playlistNames'].pop()
             playlist["playlistMusics"].pop()
 
-    print(playlist)
     with open(fileJSON, "w") as file:
         json.dump(playlist, file, indent=4)
 def get_all_playlists():
@@ -74,6 +73,7 @@ def getDuration(id):
                     hours += 1
 
                 return f"{round(hours):02d}:{round(minutes):02d}:{round(seconds):02d}"
+        return "00:00:00"
 def getPlaylistMusicsById(e, id, body, page):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -82,7 +82,36 @@ def getPlaylistMusicsById(e, id, body, page):
         if playlists[0] == id:
             if playlists[1] == "all":
                 body.content = bodyContent.AllSongs(page)
-            body.content = playlistContent.AllPlaylistSongs(page, id)
-
+            else:
+                body.content = playlistContent.AllPlaylistSongs(page, id)
+            break
     page.update()
+def get_all_playlist_musics(id):
+    with open(fileJSON, "r") as file:
+        playlist = json.load(file)
 
+    for pl in playlist["playlistMusics"]:
+        if pl[0] == id:
+            if pl[1] == "all":
+                return musicConfig.get_all_musics()
+            return pl[1]
+def deleteByIndex(idPlaylist, index):
+    with open(fileJSON, "r") as file:
+        playlist = json.load(file)
+
+    for play in playlist["playlistMusics"]:
+        if play[0] == idPlaylist:
+            play[1].pop(index)
+            with open(fileJSON, "w") as file:
+                json.dump(playlist, file, indent=4)
+            return 1
+
+    return -1
+def getIndexByPath(idPlaylist, path):
+    with open(fileJSON, "r") as file:
+        playlist = json.load(file)
+
+    for play in playlist["playlistMusics"]:
+        if play[0] == idPlaylist:
+            return play[1].index(path)
+    return None

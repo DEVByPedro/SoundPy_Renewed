@@ -86,6 +86,8 @@ def AllPlaylistSongs(page: ft.Page, id):
         if len(allCheckedSongs) >= 0:
              for path in allCheckedSongs:
                 musicConfig.deleteByIndex(musicConfig.getIndexByPath(path))
+                playlistConfig.deleteByIndex(id, playlistConfig.getIndexByPath(id, path))
+                print(path)
         checkBox.visible = False
         confirmButton.visible = False
         for cb in music_checkboxes:
@@ -104,7 +106,7 @@ def AllPlaylistSongs(page: ft.Page, id):
         page.update()
     def insert_all_songs():
 
-        allPaths = musicConfig.get_all_musics()
+        allPaths = playlistConfig.get_all_playlist_musics(id)
         for path in allPaths:
             nowId=musicConfig.getIndexByPath(path)
 

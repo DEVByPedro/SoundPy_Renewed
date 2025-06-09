@@ -11,14 +11,18 @@ equalizer_bar = "#6C6C6C"
 foreground_color = "#141414"
 
 def body(page: ft.Page):
-
-
-
     mainContent = ft.Container(
         content=ft.Text("Olá", size=45, color="white"),
-        bgcolor=background_color,
-        width=page.width,
+        bgcolor="#121212",
         expand=True
     )
 
-    return mainContent
+    return ft.Row(
+        controls=[
+            ft.Column(
+                controls=[mainContent],
+                expand=True
+            )
+        ],
+        expand=True
+    )

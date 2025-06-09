@@ -1,7 +1,5 @@
 {
     "paths": [
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/Billie Eilish - Billie Eilish - WILDFLOWER (Official Lyric Video).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Cleanin' Out My Closet (Official Music Video).mp3",
         "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Houdini [Official Music Video].mp3",
         "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Just Lose It (Official Music Video).mp3",
         "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Like Toy Soldiers (Official Music Video).mp3",
@@ -11,15 +9,7 @@
         "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Not Afraid.mp3",
         "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Rap God (Explicit).mp3",
         "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Shake That (Official Music Video) ft. Nate Dogg.mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Sing For The Moment (Official Music Video).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - The Real Slim Shady (Official Video - Clean Version).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Venom.mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - When I'm Gone (Official Music Video).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Without Me (Official Music Video).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem ft. Rihanna - The Monster (Explicit) [Official Video].mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Lose Yourself.mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Superman.mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Till I Collapse.mp3"
+        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Sing For The Moment (Official Music Video).mp3"
     ],
-    "duration": 6015
+    "duration": 2924
 }
