@@ -1,3 +1,8 @@
+import setup.bin.InstallDependencies as insDep
+import setup.bin.CreateJSONS as createJSONs
+insDep.installDependencies()
+createJSONs.createJsonSetup()
+
 import configs.MusicConfig                    as musicConfig
 import configs.UserConfig                      as userConfig
 import configs.PlaylistConfig                 as playlistConfig
@@ -146,7 +151,7 @@ def main(page: ft.Page):
             return handle_hover
     def set_user_pfp():
         response = userConfig.get_user_pfp()
-        if response != "":
+        if response != None:
             return ft.Image(src=response, width=50, height=50, border_radius=50, fit=ft.ImageFit.COVER)
         return ft.Icon(ft.Icons.PERSON_OUTLINE, color="white")
     def renew_user_pfp(e):

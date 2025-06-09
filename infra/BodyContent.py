@@ -102,6 +102,11 @@ def AllSongs(page: ft.Page):
         allSongsContainer.update()
         allSongs.update()
         page.update()
+    def getArtist(name):
+        try:
+            return name[:name.index(" -")]
+        except Exception as e:
+            return "Unknown Artist"
     def insert_all_songs():
 
         allPaths = musicConfig.get_all_musics()
@@ -112,12 +117,15 @@ def AllSongs(page: ft.Page):
             basename = os.path.basename(path)
             name = basename
 
-            if os.path.basename(path).count("-") > 1:
-                name = basename.replace(basename[0:basename.index("-") + 2], "", 1)
-            if os.path.basename(path).count("(") >= 1:
-                name = basename.replace(basename[basename.index("("):len(basename)], "")
-                if name.count("mp3"):
-                    name = basename.replace(".mp3", "")
+            try:
+                if os.path.basename(path).count("-") > 1:
+                    name = basename.replace(basename[0:basename.index("-") + 2], "", 1)
+                if os.path.basename(path).count("(") >= 1:
+                    name = basename.replace(basename[basename.index("("):len(basename)], "")
+                    if name.count("mp3"):
+                        name = basename.replace(".mp3", "")
+            except Exception as e:
+                name = ""
 
             music_checkbox = ft.Checkbox(
                 visible=False,
@@ -161,7 +169,7 @@ def AllSongs(page: ft.Page):
                                 #Nome Musica
                                 ft.Text(str(nowId + 1)+". "+name.replace(" .mp3", "")),
                                 # Artista
-                                 ft.Text("by "+name[:name.index(" -")])])], width=400),
+                                 ft.Text("by "+getArtist(name))])], width=400),
                         # Duração Musica
                         ft.Text(musicConfig.getIndividualDuration(path), width=40),
                         ft.ElevatedButton(

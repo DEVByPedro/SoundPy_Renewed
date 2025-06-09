@@ -1,15 +1,4 @@
 {
-    "paths": [
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Houdini [Official Music Video].mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Just Lose It (Official Music Video).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Like Toy Soldiers (Official Music Video).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Lose Yourself.mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Mockingbird [Official Music Video].mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - My Name Is (Official Music Video).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Not Afraid.mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Rap God (Explicit).mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Shake That (Official Music Video) ft. Nate Dogg.mp3",
-        "C:/Users/Teste/OneDrive/Desktop/Python/Testes/audio/EminemMusic - Eminem - Sing For The Moment (Official Music Video).mp3"
-    ],
-    "duration": 2924
+    "paths": [],
+    "duration": 0
 }
