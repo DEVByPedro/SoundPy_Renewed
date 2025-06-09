@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 import setup.bin.CreateJSONS as createJSONs
 
-fileJSON = os.path.join(os.path.abspath("configs/intern"), "User.json")
+fileJSON = os.path.join(os.path.abspath("configs/intFiles"), "User.json")
 
 def get_user_pfp():
     if createJSONs.createJsonSetup():

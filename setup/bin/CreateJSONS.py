@@ -1,7 +1,7 @@
 import os.path
 import json
 
-path = os.path.abspath("configs/intern")
+path = os.path.abspath("configs/intFiles")
 def createPlaylistJson():
     caminho_file = os.path.join(path, "Playlist.json")
 

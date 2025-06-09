@@ -6,7 +6,7 @@ import configs.MusicConfig as musicConfig
 import infra.BodyContent as bodyContent
 import infra.PlaylistContent as playlistContent
 
-fileJSON = os.path.join(os.path.abspath("configs/intern"), "Playlist.json")
+fileJSON = os.path.join(os.path.abspath("configs/intFiles"), "Playlist.json")
 
 def add_playlist(name: str):
     with open(fileJSON, "r") as file:

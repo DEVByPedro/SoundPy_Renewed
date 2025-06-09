@@ -2,7 +2,7 @@ import json
 from mutagen.mp3 import MP3
 import os
 
-fileJSON = os.path.join(os.path.abspath("configs/intern"), "Song.json")
+fileJSON = os.path.join(os.path.abspath("configs/intFiles"), "Song.json")
 def addMusic(path: str):
 
     if len(path) > 0:
