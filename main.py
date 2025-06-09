@@ -6,14 +6,14 @@ createJSONs.createJsonSetup()
 import configs.UserConfig as userConfig
 import configs.PlaylistConfig as playlistConfig
 import infra.Home as homePage
-import infra.PlaylistContent    as playlistContent
+import infra.BodyContent as bodyContent
 import flet as ft
 
 def main(page: ft.Page):
     page.padding = 0
     page.bgcolor = "#121212"
 
-    # Colors
+    # Cores
     background_color = "#121212"
     card_color = "#1E1E1E"
     text_primary = "#FFFFFF"
@@ -26,12 +26,11 @@ def main(page: ft.Page):
 
     buttons = []
     text_refs = []
-
     playlists_buttons = []
     submenu = ft.Column(controls=playlists_buttons, opacity=1.0, animate_opacity=300)
     expanded = False
 
-    # Playlist Modal
+    # Modal para criar playlist
     playlist_modal = ft.AlertDialog(
         open=False,
         modal=True,
@@ -51,14 +50,14 @@ def main(page: ft.Page):
                 ],
             ),
             ft.ElevatedButton(
-                "Cancel",
+                "Cancelar",
                 color="white",
                 on_click=lambda e: page.close(playlist_modal),
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
             ),
         ]
     )
-    page.add(playlist_modal)
+    page.overlay.append(playlist_modal)
 
     criarPlaylistButton = ft.ElevatedButton(
         text="Criar Nova Playlist",
@@ -70,16 +69,27 @@ def main(page: ft.Page):
         on_click=lambda e: page.open(playlist_modal)
     )
 
+    # Body central
+    body_column = ft.Column([], expand=True)
+    body = ft.Container(
+        bgcolor=background_color,
+        content=body_column,
+        padding=10,
+        margin=ft.Margin(top=-10, bottom=0, left=-10, right=0),
+        expand=True,
+        alignment=ft.alignment.top_left,
+    )
+
     def upgrade_playlist():
         playlists_buttons.clear()
         playlists_buttons.append(criarPlaylistButton)
-        for playlist in range(len(playlistConfig.get_all_playlists())):
+        for idx, playlist in enumerate(playlistConfig.get_all_playlists()):
             button = ft.ElevatedButton(
                 content=ft.Row([
                     ft.Icon(ft.Icons.MUSIC_NOTE_ROUNDED),
                     ft.Column([
-                        ft.Text(value=playlistConfig.getPlaylistNameByIndex(playlist + 1), size=12),
-                        ft.Text("Duração: " + playlistConfig.getDuration(playlist + 1), size=10, color="grey")
+                        ft.Text(value=playlist[1], size=12),
+                        ft.Text("Duração: " + playlistConfig.getDuration(playlist[0]), size=10, color="grey")
                     ]),
                 ]),
                 color="white",
@@ -87,7 +97,7 @@ def main(page: ft.Page):
                 height=50,
                 width=250,
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
-                on_click=lambda e, playlist_id=playlist + 1: show_playlists(e, playlist_id)
+                on_click=lambda e, playlist_id=playlist[0]: playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page)
             )
             playlists_buttons.append(button)
         submenu.controls = playlists_buttons
@@ -132,14 +142,14 @@ def main(page: ft.Page):
         page.update()
 
     def show_all_fav(e):
-        print("Método ainda não construído")
-
-    def show_mainMenu(e):
-        body.content = homePage.body(page)
-        page.update()
-
-    def show_playlists(e, id):
-        body.content = playlistContent.AllPlaylistSongs(page, id)
+        body_column.controls.clear()
+        body_column.controls.append(ft.Container(
+            content=ft.Text("Favoritos ainda não implementado.", color=text_secondary, size=20),
+            alignment=ft.alignment.center,
+            expand=True,
+            bgcolor=background_color
+        ))
+        body_column.update()
         page.update()
 
     def create_hover_handler(txt, icon):
@@ -149,6 +159,18 @@ def main(page: ft.Page):
             txt.update()
             icon.update()
         return handle_hover
+
+    def show_all_msc(e):
+        body_column.controls.clear()
+        body_column.controls.append(bodyContent.AllSongs(page))
+        body_column.update()
+        page.update()
+
+    def show_mainMenu(e):
+        body_column.controls.clear()
+        body_column.controls.append(homePage.body(page))
+        body_column.update()
+        page.update()
 
     def set_user_pfp():
         response = userConfig.get_user_pfp()
@@ -244,7 +266,7 @@ def main(page: ft.Page):
         items=[
             ft.PopupMenuItem(
                 content=ft.Row([
-                    ft.Text(f"Hello, {userConfig.getUserName()}!"),
+                    ft.Text(f"Olá, {userConfig.getUserName()}!"),
                     userProfileButton
                 ], width=300, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                 mouse_cursor=ft.MouseCursor.BASIC,
@@ -262,18 +284,9 @@ def main(page: ft.Page):
         bgcolor=foreground_color,
         height=70,
         padding=10,
-        margin=ft.Margin(top=-10, bottom=0, left=0, right=0),
+        margin=ft.Margin(top=0, bottom=0, left=0, right=0),
         animate=ft.Animation(200, "easeInOut"),
-        expand=True
-    )
-
-    body = ft.Container(
-        bgcolor=background_color,
-        content=ft.Container(homePage.body(page)),
-        padding=10,
-        margin=ft.Margin(top=-10, bottom=0, left=-10, right=0),
-        expand=True,
-        alignment=ft.alignment.top_left,
+        expand=False
     )
 
     layout = ft.Row(
@@ -281,7 +294,17 @@ def main(page: ft.Page):
         expand=True,
     )
 
+    # Coluna principal para manter o layout estável
+    main_column = ft.Column(
+        controls=[topbar, layout],
+        expand=True,
+    )
+
+    # Inicializa com a tela principal
+    body_column.controls.clear()
+    body_column.controls.append(homePage.body(page))
+
     page.bgcolor = "white"
-    page.add(layout)
+    page.add(main_column)
 
 ft.app(target=main)

@@ -325,10 +325,5 @@ def AllSongs(page: ft.Page):
         expand=True,
     )
 
-    return ft.Container(
-        content=ft.Column([all]),
-        bgcolor=background_color,
-        border_radius=10,
-        expand=True
-    )
+    return allSongs
 
