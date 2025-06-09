@@ -3,16 +3,17 @@ import setup.bin.CreateJSONS as createJSONs
 insDep.installDependencies()
 createJSONs.createJsonSetup()
 
-import configs.MusicConfig                    as musicConfig
-import configs.UserConfig                      as userConfig
-import configs.PlaylistConfig                 as playlistConfig
-import infra.BodyContent                        as bodyContent
-import infra.Home                                    as homePage
+import configs.UserConfig as userConfig
+import configs.PlaylistConfig as playlistConfig
+import infra.Home as homePage
+import infra.PlaylistContent    as playlistContent
 import flet as ft
 
 def main(page: ft.Page):
     page.padding = 0
+    page.bgcolor = "#121212"
 
+    # Colors
     background_color = "#121212"
     card_color = "#1E1E1E"
     text_primary = "#FFFFFF"
@@ -28,9 +29,9 @@ def main(page: ft.Page):
 
     playlists_buttons = []
     submenu = ft.Column(controls=playlists_buttons, opacity=1.0, animate_opacity=300)
-
     expanded = False
 
+    # Playlist Modal
     playlist_modal = ft.AlertDialog(
         open=False,
         modal=True,
@@ -49,13 +50,14 @@ def main(page: ft.Page):
                     upgrade_playlist(),
                 ],
             ),
-            ft.ElevatedButton("Cancel",
-                              color="white",
-                              on_click=lambda e: page.close(playlist_modal),
-                              style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2))),
+            ft.ElevatedButton(
+                "Cancel",
+                color="white",
+                on_click=lambda e: page.close(playlist_modal),
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
+            ),
         ]
     )
-
     page.add(playlist_modal)
 
     criarPlaylistButton = ft.ElevatedButton(
@@ -76,8 +78,8 @@ def main(page: ft.Page):
                 content=ft.Row([
                     ft.Icon(ft.Icons.MUSIC_NOTE_ROUNDED),
                     ft.Column([
-                        ft.Text(value=playlistConfig.getPlaylistNameByIndex(playlist+1), size=12),
-                        ft.Text("Duração: "+playlistConfig.getDuration(playlist+1), size=10, color="grey")
+                        ft.Text(value=playlistConfig.getPlaylistNameByIndex(playlist + 1), size=12),
+                        ft.Text("Duração: " + playlistConfig.getDuration(playlist + 1), size=10, color="grey")
                     ]),
                 ]),
                 color="white",
@@ -85,16 +87,16 @@ def main(page: ft.Page):
                 height=50,
                 width=250,
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
-                on_click=lambda e, playlist_id=playlist+1: playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page)
+                on_click=lambda e, playlist_id=playlist + 1: show_playlists(e, playlist_id)
             )
-
             playlists_buttons.append(button)
         submenu.controls = playlists_buttons
         page.update()
+
     def toggle_sidebar(e):
-        nonlocal  expanded
+        nonlocal expanded
         if e.data == "true":
-            sidebar.bgcolor=foreground_color
+            sidebar.bgcolor = foreground_color
             for txt in text_refs:
                 txt.opacity = 1
                 txt.offset = ft.Offset(0, 0)
@@ -106,73 +108,74 @@ def main(page: ft.Page):
             submenu.visible = False
             for btn in submenu.controls:
                 btn.opacity = 0.0
-            sidebar.bgcolor=foreground_color
+            sidebar.bgcolor = foreground_color
             for btn in buttons:
-                btn.width = 40
+                btn.width = 60
             for txt in text_refs:
                 txt.opacity = 0
                 txt.offset = ft.Offset(-0.3, 0)
             sidebar.width = 60
         page.update()
+
     def toggle_menu(e):
         nonlocal expanded
         expanded = not expanded
-
         if expanded:
             upgrade_playlist()
             submenu.visible = True
             submenu.opacity = 1.0
-            submenu.animate_opacity = 300
-            for btn in submenu.controls:
-                btn.visible = True
-                btn.opacity = 1.0
-                btn.animate_opacity = 300
         else:
             submenu.opacity = 0.0
-            submenu.animate_opacity = 300
             for btn in submenu.controls:
                 btn.visible = False
                 btn.opacity = 0.0
-                btn.animate_opacity = 300
-
         page.update()
+
     def show_all_fav(e):
         print("Método ainda não construído")
-    def show_mainMenu(e):
-        body.content=homePage.body(page)
-        page.update()
-    def create_hover_handler(txt, icon):
-            def handle_hover(e):
-                txt.color = text_secondary if e.data == "true" else text_primary
-                icon.color = text_secondary if e.data == "true" else text_primary
-                txt.update()
-                icon.update()
 
-            return handle_hover
+    def show_mainMenu(e):
+        body.content = homePage.body(page)
+        page.update()
+
+    def show_playlists(e, id):
+        body.content = playlistContent.AllPlaylistSongs(page, id)
+        page.update()
+
+    def create_hover_handler(txt, icon):
+        def handle_hover(e):
+            txt.color = text_secondary if e.data == "true" else text_primary
+            icon.color = text_secondary if e.data == "true" else text_primary
+            txt.update()
+            icon.update()
+        return handle_hover
+
     def set_user_pfp():
         response = userConfig.get_user_pfp()
-        if response != None:
+        if response:
             return ft.Image(src=response, width=50, height=50, border_radius=50, fit=ft.ImageFit.COVER)
         return ft.Icon(ft.Icons.PERSON_OUTLINE, color="white")
+
     def renew_user_pfp(e):
-        if userConfig.find_pfp() == True:
+        if userConfig.find_pfp():
             photoButton.src = userConfig.get_user_pfp()
             userProfile.content.src = userConfig.get_user_pfp()
             photoButton.update()
             userProfile.update()
+
     def change_opacity(e):
-            changeButton.opacity = 0.7 if e.data == "true" else 0
-            changeButton.update()
+        changeButton.opacity = 0.7 if e.data == "true" else 0
+        changeButton.update()
 
     menu_items = [
-        (ft.Text(value="Home", weight=700), ft.Icon(ft.Icons.HOME, size=20, color="white"), lambda e: show_mainMenu(e)),
-        (ft.Text(value="Fav. Songs", weight=700), ft.Icon(ft.Icons.BOOKMARK_ADD_SHARP, size=20, color="white"), lambda e: show_all_fav(e)),
-        (ft.Text(value="Playlists", weight=700), ft.Icon(ft.Icons.PLAYLIST_PLAY_SHARP, size=20, color="white"), lambda e: toggle_menu(e)),
+        ("Home", ft.Icons.HOME, show_mainMenu),
+        ("Fav. Songs", ft.Icons.BOOKMARK_ADD_SHARP, show_all_fav),
+        ("Playlists", ft.Icons.PLAYLIST_PLAY_SHARP, toggle_menu),
     ]
 
-    for label, icon, action in menu_items:
+    for label, icon_name, action in menu_items:
         text = ft.Text(
-            value=label.value,
+            value=label,
             size=15,
             weight=ft.FontWeight.W_400,
             color=text_primary,
@@ -183,13 +186,12 @@ def main(page: ft.Page):
         )
         text_refs.append(text)
 
+        icon = ft.Icon(icon_name, size=20, color="white")
+
         buttons.append(
             ft.ElevatedButton(
                 content=ft.Container(
-                    content=ft.Row(
-                        [icon,
-                         text,]
-                    ),
+                    content=ft.Row([icon, text]),
                     alignment=ft.alignment.center_left,
                     expand=True,
                 ),
@@ -198,92 +200,88 @@ def main(page: ft.Page):
                     shape=ft.RoundedRectangleBorder(radius=5),
                     overlay_color=button_hover,
                 ),
-                width=40,
+                width=60,
                 height=40,
                 animate_scale=200,
                 on_click=action,
-                on_hover=create_hover_handler(text, icon)
+                on_hover=create_hover_handler(text, icon),
             )
         )
     buttons.append(submenu)
 
     sidebar = ft.Container(
-        content=ft.Column(buttons),
+        content=ft.Column(buttons, scroll="auto", expand=True),
         bgcolor=foreground_color,
         width=60,
-        alignment=ft.alignment.center_left,
-        padding=ft.Padding(top=10, right=0, left=10, bottom=0),
-        margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
+        alignment=ft.alignment.top_left,
+        padding=ft.Padding(top=10, right=5, left=10, bottom=10),
         animate=ft.Animation(200, "easeInOut"),
+        margin=ft.Margin(top=-10, bottom=0, left=0, right=0),
         on_hover=toggle_sidebar,
+        expand=False
     )
 
-    changeButton = ft.ElevatedButton(content= ft.Icon(ft.Icons.EDIT, color="white"),
-                                              width=50,
-                                              height=50,
-                                              style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=50)),
-                                              opacity=0,
-                                              on_click=renew_user_pfp,
-                                              on_hover=change_opacity)
+    changeButton = ft.ElevatedButton(
+        content=ft.Icon(ft.Icons.EDIT, color="white"),
+        width=50,
+        height=50,
+        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=50)),
+        opacity=0,
+        on_click=renew_user_pfp,
+        on_hover=change_opacity,
+    )
     photoButton = set_user_pfp()
 
-    userProfileButton = ft.Stack(
-                        controls=[
-                            photoButton,
-                            changeButton],
-        width=50,
-        height=50)
+    userProfileButton = ft.Stack([
+        photoButton,
+        changeButton
+    ], width=50, height=50)
 
     userProfile = ft.PopupMenuButton(
-            width=50,
-            height=50,
-            content=set_user_pfp(),
-            items= [
-                ft.PopupMenuItem(
-                    content=ft.Row([ft.Text(f"Hello, {userConfig.getUserName()}!"), userProfileButton], width=300, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                    mouse_cursor=ft.MouseCursor.BASIC,
-                )
-            ],
-
-        )
-
-    # Top Bar
-    topContents = [
-        ft.Text(width=80),
-        ft.TextField(border_color="white", width=550, hint_text="Procurar Musicas"),
-        userProfile
-    ]
-
-    topbar = ft.Container(
-        content=ft.Row(topContents, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-        bgcolor=foreground_color,
-        height=70,
-        alignment=ft.alignment.center,
-        margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
-        padding=5,
-        animate=ft.Animation(200, "easeInOut"),
+        width=50,
+        height=50,
+        content=set_user_pfp(),
+        items=[
+            ft.PopupMenuItem(
+                content=ft.Row([
+                    ft.Text(f"Hello, {userConfig.getUserName()}!"),
+                    userProfileButton
+                ], width=300, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                mouse_cursor=ft.MouseCursor.BASIC,
+            )
+        ],
     )
 
-    # Body
-
-    body = ft.Container(
-        bgcolor=background_color,
-        margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
-        content=ft.Container(homePage.body(page)),
+    # Top Bar
+    topbar = ft.Container(
+        content=ft.Row([
+            ft.Text(width=80),
+            ft.TextField(border_color="white", width=550, hint_text="Procurar Músicas"),
+            userProfile,
+        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        bgcolor=foreground_color,
+        height=70,
         padding=10,
+        margin=ft.Margin(top=-10, bottom=0, left=0, right=0),
+        animate=ft.Animation(200, "easeInOut"),
         expand=True
     )
 
-    layout = ft.Row([
-        ft.Column([
-            topbar,
-            ft.Row([
-                sidebar,
-                body,
-            ], expand=True),
-        ], expand=True),
-    ],expand=True)
+    body = ft.Container(
+        bgcolor=background_color,
+        content=ft.Container(homePage.body(page)),
+        padding=10,
+        margin=ft.Margin(top=-10, bottom=0, left=-10, right=0),
+        expand=True,
+        alignment=ft.alignment.top_left,
+    )
 
+    layout = ft.Row(
+        controls=[sidebar, body],
+        expand=True,
+    )
+
+    page.bgcolor = "white"
     page.add(layout)
 
 ft.app(target=main)

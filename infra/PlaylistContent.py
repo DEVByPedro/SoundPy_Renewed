@@ -323,11 +323,12 @@ def AllPlaylistSongs(page: ft.Page, id):
         expand=True,
     )
 
-    all = ft.Container(content=ft.Column([
-        allSongs,
-    ]), bgcolor=background_color,
+    all = ft.Container(
+        content=ft.Column(
+            [allSongs]),
+        bgcolor=background_color,
         border_radius=10,
-    expand=True)
+        expand=True)
 
     page.update()
 
