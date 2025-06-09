@@ -213,6 +213,7 @@ def main(page: ft.Page):
         width=60,
         alignment=ft.alignment.center_left,
         padding=ft.Padding(top=10, right=0, left=10, bottom=0),
+        margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
         animate=ft.Animation(200, "easeInOut"),
         on_hover=toggle_sidebar,
     )
@@ -258,7 +259,7 @@ def main(page: ft.Page):
         bgcolor=foreground_color,
         height=70,
         alignment=ft.alignment.center,
-        margin=ft.Margin(left=-10, top=0, bottom=0, right=0),
+        margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
         padding=5,
         animate=ft.Animation(200, "easeInOut"),
     )
@@ -269,7 +270,6 @@ def main(page: ft.Page):
         bgcolor=background_color,
         margin=ft.Margin(left=-10, top=-10, bottom=0, right=0),
         content=ft.Container(homePage.body(page)),
-        height=page.window.height - 10,
         padding=10,
         expand=True
     )
