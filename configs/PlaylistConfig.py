@@ -21,7 +21,6 @@ def add_playlist(name: str):
     playlist['playlistMusics'].append([maxId, []])
     with open(fileJSON, "w") as file:
         json.dump(playlist, file, indent=4)
-
 def remove_playlist_by_name(name: str):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -35,12 +34,10 @@ def remove_playlist_by_name(name: str):
         playlist["playlistMusics"].pop(idx)
     with open(fileJSON, "w") as file:
         json.dump(playlist, file, indent=4)
-
 def get_all_playlists():
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
     return playlist["playlistNames"]
-
 def getPlaylistNameByIndex(index):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -48,7 +45,6 @@ def getPlaylistNameByIndex(index):
         if pl[0] == index:
             return pl[1]
     return ""
-
 def getDuration(id):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -69,7 +65,6 @@ def getDuration(id):
             minutes = minutes % 60
             return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
     return "00:00:00"
-
 def getPlaylistMusicsById(e, id, body, page):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -84,7 +79,6 @@ def getPlaylistMusicsById(e, id, body, page):
     body.content.update()
     body.update()
     page.update()
-
 def get_all_playlist_musics(id):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -94,7 +88,6 @@ def get_all_playlist_musics(id):
                 return musicConfig.get_all_musics()
             return pl[1]
     return []
-
 def deleteByIndex(idPlaylist, index):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -112,7 +105,6 @@ def deleteByIndex(idPlaylist, index):
                     json.dump(playlist, file, indent=4)
                 return 1
     return -1
-
 def getIndexByPath(idPlaylist, path):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)

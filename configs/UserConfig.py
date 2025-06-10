@@ -2,18 +2,16 @@ import json
 import os
 import tkinter as tk
 from tkinter import filedialog
-import setup.bin.CreateJSONS as createJSONs
 
 fileJSON = os.path.join(os.path.abspath("configs/intFiles"), "User.json")
 
 def get_user_pfp():
-    if createJSONs.createJsonSetup():
-
+    if os.path.exists(fileJSON):
         with open (fileJSON, "r") as file:
             userProf = json.load(file)
 
         if userProf['pfp_path'] == "":
-            return ""
+            return False
         else:
             return userProf['pfp_path']
 def find_pfp():

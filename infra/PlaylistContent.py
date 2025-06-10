@@ -43,7 +43,12 @@ def AllPlaylistSongs(page: ft.Page, id):
 
     allCheckedSongs = []
     music_checkboxes = []
+    currentHeight = []
 
+    def changeHeight(e, path):
+        nonlocal currentHeight
+        currentHeight = [200]
+        page.update()
     def add_msc(e):
         try:
             tki = tk.Tk()
@@ -61,7 +66,6 @@ def AllPlaylistSongs(page: ft.Page, id):
             page.update()
         except Exception:
             return
-
     def change_checkBox_visibility(e):
         checkBox.visible = not checkBox.visible
         confirmButton.visible = not confirmButton.visible
@@ -69,7 +73,6 @@ def AllPlaylistSongs(page: ft.Page, id):
         for cb in music_checkboxes:
             cb.visible = not cb.visible
         page.update()
-
     def changeAllCheckBox(e):
         for cb in music_checkboxes:
             cb.value = True if e.data == 'true' else False
@@ -80,7 +83,6 @@ def AllPlaylistSongs(page: ft.Page, id):
         if e.data == 'false':
             allCheckedSongs.clear()
         page.update()
-
     def excludeSongs(e):
         if allCheckedSongs:
             for path in allCheckedSongs:
@@ -100,16 +102,45 @@ def AllPlaylistSongs(page: ft.Page, id):
         allSongsContainer.update()
         allSongs.update()
         page.update()
-
     def getArtist(name):
         return name.split("-")[0] if "-" in name else "Unknown Artist"
-
     def insert_all_songs():
         allPaths = playlistConfig.get_all_playlist_musics(id)
-        for path in allPaths:
+        container_refs = []
+        container_heights = []
+        expanded_idx = [-1]
+        playlist_images = []
+
+        for idx, path in enumerate(allPaths):
+
+            imageContent = ft.Column(
+            [playlistImage],
+                                width=130 if container_heights[idx] == 170 else 50,
+                                height=130 if container_heights[idx] == 170 else 50,
+                                alignment=ft.MainAxisAlignment.CENTER
+                            )
             nowId = musicConfig.getIndexByPath(path)
             basename = os.path.basename(path)
             name = basename.replace(".mp3", "")
+
+            row_ref = ft.Ref[ft.Container]()
+            container_refs.append(row_ref)
+            container_heights.append(70)
+
+            def make_expand_handler(refs, heights, images, i):
+                def handler(e):
+                    for j in range(len(heights)):
+                        heights[j] = 170 if j == i and heights[j] == 70 else 70
+                        refs[j].current.bgcolor = "#383838" if heights[j] == 170 else foreground_color
+                        images[j].height = 130 if heights[j] == 170 else 50
+                        images[j].width = 130 if heights[j] == 170 else 50
+                        images[j].update()
+                    for k, r in enumerate(refs):
+                        if r.current:
+                            r.current.height = heights[k]
+                            r.current.update()
+                return handler
+
             music_checkbox = ft.Checkbox(
                 visible=False,
                 width=20,
@@ -120,9 +151,13 @@ def AllPlaylistSongs(page: ft.Page, id):
                 )
             )
             music_checkboxes.append(music_checkbox)
+
             playlistImage = ft.Image(src=path.replace(".mp3", ".jpg"), width=50, height=50, fit=ft.ImageFit.COVER)
+            playlist_images.append(playlistImage)
+
             allSongsContainer.controls.append(
                 ft.Container(
+                    ref=row_ref,
                     content=ft.Row([
                         ft.Row([
                             music_checkbox,
@@ -136,28 +171,42 @@ def AllPlaylistSongs(page: ft.Page, id):
                                     padding=ft.Padding(top=0, left=0, right=5, bottom=0)
                                 )
                             ),
-                            playlistImage,
+                            imageContent,
                             ft.Column([
                                 ft.Text(str(nowId + 1) + ". " + name),
                                 ft.Text("by " + getArtist(name))
                             ])
                         ], width=400),
-                        ft.Text(musicConfig.getIndividualDuration(path)),
-                        ft.ElevatedButton(
-                            content=ft.Icon(ft.Icons.EXPAND_MORE_OUTLINED, color='white', size=20),
-                            style=ft.ButtonStyle(
-                                bgcolor="transparent",
-                                overlay_color="transparent",
-                                elevation=0,
-                            ))
+                        ft.Container(
+                            ft.Column(
+                                [
+                                    ft.Row(
+                                        [
+                                            ft.Text(musicConfig.getIndividualDuration(path)),
+                                            ft.ElevatedButton(
+                                                content=ft.Icon(ft.Icons.EXPAND_MORE_OUTLINED, color='white', size=20),
+                                                style=ft.ButtonStyle(
+                                                    bgcolor="transparent",
+                                                    overlay_color="transparent",
+                                                    elevation=0
+                                                ),
+                                                on_click=make_expand_handler(container_refs, container_heights, playlist_images, idx))
+                                        ], width=400, alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                                    )
+                                ]),
+                            padding=ft.Padding(top=5, right=0, left=0, bottom=0))
                     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                     on_hover=change_hover,
                     bgcolor=foreground_color,
-                    height=70,
+                    height=container_heights[idx],
                     padding=10,
-                    border_radius=5
+                    border_radius=5,
+                    animate=ft.Animation(100, "easeIn"),
                 )
             )
+    def change_bgcolor(e):
+        e.control.bgcolor = "#212121" if e.data == "true" else card_color
+        page.update()
 
     allSongsContainer = ft.Column(
         scroll=ft.ScrollMode.AUTO,
@@ -183,8 +232,9 @@ def AllPlaylistSongs(page: ft.Page, id):
     )
 
     insert_all_songs()
-    durTot = ft.Text("Duração: " + musicConfig.getDuration())
+
     currentPlaylistTitle = ft.Text(playlistConfig.getPlaylistNameByIndex(id) + ":", size=34, weight=ft.FontWeight.W_500)
+    durTot                       = ft.Text("Duração: " + musicConfig.getDuration())
 
     configPlaylistButton = ft.PopupMenuButton(
         content=ft.Container(
@@ -270,6 +320,8 @@ def AllPlaylistSongs(page: ft.Page, id):
         margin=ft.Margin(top=20, left=10, right=0, bottom=0),
         bgcolor=card_color,
         border_radius=10,
+        on_hover=change_bgcolor,
+        animate=ft.Animation(150, "ease-in"),
         expand=True
     )
 

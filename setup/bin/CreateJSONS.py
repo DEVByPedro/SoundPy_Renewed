@@ -38,7 +38,6 @@ def createUserJson():
     # Cria a pasta se não existir
     if not os.path.exists(caminho_file):
         os.makedirs(path, exist_ok=True)
-
         # Cria os dados iniciais
         dados = {
             "name": "User",
@@ -48,6 +47,8 @@ def createUserJson():
 
         with open(caminho_file, "w", encoding="utf-8") as file:
             json.dump(dados, file, indent=4, ensure_ascii=False)
+        return True
+    else:
         return True
 
 def createJsonSetup():

@@ -102,7 +102,6 @@ def main(page: ft.Page):
             playlists_buttons.append(button)
         submenu.controls = playlists_buttons
         page.update()
-
     def toggle_sidebar(e):
         nonlocal expanded
         if e.data == "true":
@@ -126,7 +125,6 @@ def main(page: ft.Page):
                 txt.offset = ft.Offset(-0.3, 0)
             sidebar.width = 60
         page.update()
-
     def toggle_menu(e):
         nonlocal expanded
         expanded = not expanded
@@ -140,7 +138,6 @@ def main(page: ft.Page):
                 btn.visible = False
                 btn.opacity = 0.0
         page.update()
-
     def show_all_fav(e):
         body_column.controls.clear()
         body_column.controls.append(ft.Container(
@@ -151,7 +148,6 @@ def main(page: ft.Page):
         ))
         body_column.update()
         page.update()
-
     def create_hover_handler(txt, icon):
         def handle_hover(e):
             txt.color = text_secondary if e.data == "true" else text_primary
@@ -159,32 +155,27 @@ def main(page: ft.Page):
             txt.update()
             icon.update()
         return handle_hover
-
     def show_all_msc(e):
         body_column.controls.clear()
         body_column.controls.append(bodyContent.AllSongs(page))
         body_column.update()
         page.update()
-
     def show_mainMenu(e):
         body_column.controls.clear()
         body_column.controls.append(homePage.body(page))
         body_column.update()
         page.update()
-
     def set_user_pfp():
         response = userConfig.get_user_pfp()
         if response:
             return ft.Image(src=response, width=50, height=50, border_radius=50, fit=ft.ImageFit.COVER)
         return ft.Icon(ft.Icons.PERSON_OUTLINE, color="white")
-
     def renew_user_pfp(e):
         if userConfig.find_pfp():
             photoButton.src = userConfig.get_user_pfp()
             userProfile.content.src = userConfig.get_user_pfp()
             photoButton.update()
             userProfile.update()
-
     def change_opacity(e):
         changeButton.opacity = 0.7 if e.data == "true" else 0
         changeButton.update()
