@@ -1,3 +1,6 @@
+from pygame.sprite import \
+    collide_circle_ratio
+
 import setup.bin.InstallDependencies as insDep
 import setup.bin.CreateJSONS as createJSONs
 insDep.installDependencies()
@@ -82,6 +85,8 @@ def main(page: ft.Page):
 
     def upgrade_playlist():
         playlists_buttons.clear()
+        criarPlaylistButton.visible = True
+        criarPlaylistButton.opacity = 1.0
         playlists_buttons.append(criarPlaylistButton)
         for idx, playlist in enumerate(playlistConfig.get_all_playlists()):
             button = ft.ElevatedButton(
@@ -90,7 +95,7 @@ def main(page: ft.Page):
                     ft.Column([
                         ft.Text(value=playlist[1], size=12),
                         ft.Text("Duração: " + playlistConfig.getDuration(playlist[0]), size=10, color="grey")
-                    ]),
+                    ], height=40),
                 ]),
                 color="white",
                 bgcolor=card_color,
@@ -100,6 +105,7 @@ def main(page: ft.Page):
                 on_click=lambda e, playlist_id=playlist[0]: playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page)
             )
             playlists_buttons.append(button)
+        criarPlaylistButton.visible = True
         submenu.controls = playlists_buttons
         page.update()
     def toggle_sidebar(e):
@@ -119,7 +125,7 @@ def main(page: ft.Page):
                 btn.opacity = 0.0
             sidebar.bgcolor = foreground_color
             for btn in buttons:
-                btn.width = 60
+                btn.width = 40
             for txt in text_refs:
                 txt.opacity = 0
                 txt.offset = ft.Offset(-0.3, 0)
@@ -131,6 +137,9 @@ def main(page: ft.Page):
         if expanded:
             upgrade_playlist()
             submenu.visible = True
+            criarPlaylistButton.visible = True
+            for btn in submenu.controls:
+                btn.visible = True
             submenu.opacity = 1.0
         else:
             submenu.opacity = 0.0
@@ -213,7 +222,7 @@ def main(page: ft.Page):
                     shape=ft.RoundedRectangleBorder(radius=5),
                     overlay_color=button_hover,
                 ),
-                width=60,
+                width=40,
                 height=40,
                 animate_scale=200,
                 on_click=action,
@@ -295,7 +304,6 @@ def main(page: ft.Page):
     body_column.controls.clear()
     body_column.controls.append(homePage.body(page))
 
-    page.bgcolor = "white"
     page.add(main_column)
 
 ft.app(target=main)

@@ -79,14 +79,28 @@ def getPlaylistMusicsById(e, id, body, page):
     body.content.update()
     body.update()
     page.update()
-def get_all_playlist_musics(id):
+def get_all_playlist_musics(id, limit):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
+    musics = []
     for pl in playlist["playlistMusics"]:
         if pl[0] == id:
+            if len(pl[1]) == 0:
+                return []
+            if limit == "all":
+                limit = len(musicConfig.get_all_musics())
+            else:
+                limit = int(limit)
             if pl[1] == "all":
-                return musicConfig.get_all_musics()
-            return pl[1]
+                allMsc = musicConfig.get_all_musics()
+                for i in range(limit):
+                    if i <= len(allMsc):
+                        musics.append(allMsc[i])
+            else:
+                for i in range(limit):
+                    if i <= len(pl[1]):
+                        musics.append(pl[1][i])
+            return musics
     return []
 def deleteByIndex(idPlaylist, index):
     with open(fileJSON, "r") as file:
