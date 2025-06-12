@@ -38,7 +38,13 @@ def main(page: ft.Page):
         open=False,
         modal=True,
         title=ft.Text("Criar Playlist:"),
-        content=ft.TextField(hint_text="Nome da Playlist", border_color=text_primary),
+        content=ft.TextField(hint_text="Nome da Playlist",
+                             border_color=text_primary,
+                             on_submit=lambda e: [
+                                playlistConfig.add_playlist(playlist_modal.content.value),
+                                page.close(playlist_modal),
+                                upgrade_playlist()]
+                             ),
         bgcolor=card_color,
         actions=[
             ft.ElevatedButton(
