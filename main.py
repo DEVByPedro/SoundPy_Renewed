@@ -181,10 +181,14 @@ def main(page: ft.Page):
         return ft.Icon(ft.Icons.PERSON_OUTLINE, color="white")
     def renew_user_pfp(e):
         if userConfig.find_pfp():
-            photoButton.src = userConfig.get_user_pfp()
-            userProfile.content.src = userConfig.get_user_pfp()
-            photoButton.update()
-            userProfile.update()
+            new_image = set_user_pfp()
+            userProfile.content = new_image
+
+            new_userProfileButton = ft.Stack([new_image, changeButton], width=50, height=50)
+
+            userProfile.items[0].content.controls[1] = new_userProfileButton
+
+            page.update()
     def change_opacity(e):
         changeButton.opacity = 0.7 if e.data == "true" else 0
         changeButton.update()
@@ -278,7 +282,13 @@ def main(page: ft.Page):
     topbar = ft.Container(
         content=ft.Row([
             ft.Text(width=80),
-            ft.TextField(border_color="white", width=550, hint_text="Procurar Músicas"),
+            ft.TextField(
+                border_color=text_secondary,
+                width=550,
+                hint_text="Procurar Músicas",
+                prefix_icon=ft.Icon(ft.Icons.SEARCH_OUTLINED, color=text_secondary, size=18),
+                border_radius=25
+            ),
             userProfile,
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         bgcolor=foreground_color,

@@ -21,6 +21,17 @@ def add_playlist(name: str):
     playlist['playlistMusics'].append([maxId, []])
     with open(fileJSON, "w") as file:
         json.dump(playlist, file, indent=4)
+def addMusic(idPlaylist, path):
+    with open(fileJSON, "r") as file:
+        playlist = json.load(file)
+    for play in playlist["playlistMusics"]:
+        if play[0] == idPlaylist:
+            if play[1] == "all":
+                return
+            play[1].append(path)
+    with open(fileJSON, "w") as file:
+        json.dump(playlist, file, indent=4)
+    return "Added"
 def remove_playlist_by_name(name: str):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -83,25 +94,26 @@ def get_all_playlist_musics(id, limit):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
     musics = []
-    for pl in playlist["playlistMusics"]:
-        if pl[0] == id:
-            if len(pl[1]) == 0:
-                return []
-            if limit == "all":
-                limit = len(musicConfig.get_all_musics())
-            else:
-                limit = int(limit)
-            if pl[1] == "all":
-                allMsc = musicConfig.get_all_musics()
-                for i in range(limit):
-                    if i <= len(allMsc):
-                        musics.append(allMsc[i])
-            else:
-                for i in range(limit):
-                    if i <= len(pl[1]):
-                        musics.append(pl[1][i])
-            return musics
-    return []
+    try:
+        for pl in playlist["playlistMusics"]:
+            if pl[0] == id:
+                if len(pl[1]) == 0:
+                    return []
+                if limit == "all":
+                    limit = len(musicConfig.get_all_musics())
+                else:
+                    limit = int(limit)
+                if pl[1] == "all":
+                    allMsc = musicConfig.get_all_musics()
+                    for i in range(limit):
+                        if i <= len(allMsc):
+                            musics.append(allMsc[i])
+                else:
+                    for i in range(limit):
+                            musics.append(pl[1][i])
+                return musics
+    except IndexError as e:
+        return musics
 def deleteByIndex(idPlaylist, index):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
@@ -131,4 +143,14 @@ def getIndexByPath(idPlaylist, path):
                         return all.index(row)
             if path in play[1]:
                 return play[1].index(path)
-    return None
+    return 0
+def editPlaylistName(idPlaylist, newName):
+    with open(fileJSON, "r") as file:
+        playlist = json.load(file)
+    for pl in playlist["playlistNames"]:
+        if pl[0] == idPlaylist:
+            pl[1] = newName
+            break
+    with open(fileJSON, "w") as file:
+        json.dump(playlist, file, indent=4)
+    return "Edited"

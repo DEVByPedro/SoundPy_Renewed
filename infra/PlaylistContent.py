@@ -23,6 +23,12 @@ def change_hover(e):
 def AllPlaylistSongs(page: ft.Page, id):
     ytLink = ft.TextField()
 
+    imagePlaylist = ft.Image(src=musicConfig.getPathByIndex(0).replace(".mp3", ".jpg"), width=100, height=100, fit=ft.ImageFit.COVER)
+
+    def deletePlaylist(e, playlist_id):
+        playlistConfig.remove_playlist_by_name(playlistConfig.getPlaylistNameByIndex(playlist_id))
+        page.close(modal_confirm)
+
     modal_confirm = ft.AlertDialog(
         modal=True,
         open=False,
@@ -31,12 +37,12 @@ def AllPlaylistSongs(page: ft.Page, id):
         actions=[
             ft.ElevatedButton(
                 text="Excluir",
-                on_click=lambda e: page.close(modal_confirm),
+                on_click=lambda e: deletePlaylist(e, id),
                 bgcolor="red",
                 color="white",
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=6),
-                )
+                ),
             ),
             ft.ElevatedButton(
                 text="Cancelar",
@@ -80,7 +86,7 @@ def AllPlaylistSongs(page: ft.Page, id):
             tki.attributes("-topmost", True)
             file_path = filedialog.askopenfiles(title="Selecione músicas", filetypes=[("MP3 Files", ".mp3")])
             for file in file_path:
-                musicConfig.addMusic(file.name)
+                playlistConfig.addMusic(id, file.name)
             allSongsContainer.controls.clear()
             insert_all_songs()
             imagePlaylist.src = musicConfig.getPathByIndex(0).replace(".mp3", ".jpg")
@@ -118,7 +124,7 @@ def AllPlaylistSongs(page: ft.Page, id):
             cb.visible = False
             cb.value = False
         allSongsContainer.controls.clear()
-        insert_all_songs()
+        insert_all_songs(limit[0])
         imagePlaylist.src = musicConfig.getPathByIndex(0).replace(".mp3", ".jpg")
         durTot.value = "Duração: " + musicConfig.getDuration()
         durTot.update()
@@ -131,8 +137,10 @@ def AllPlaylistSongs(page: ft.Page, id):
     def insert_all_songs(limit):
         allPaths = playlistConfig.get_all_playlist_musics(id, limit)
 
+        imagePlaylist.src = get_first_music_image(id)
+
         for idx, path in enumerate(allPaths) :
-            nowId = musicConfig.getIndexByPath(path)
+            nowId = playlistConfig.getIndexByPath(id, path)
             basename = os.path.basename(path)
             name = basename.replace(".mp3", "")
 
@@ -166,7 +174,7 @@ def AllPlaylistSongs(page: ft.Page, id):
                             ),
                             playlistImage,
                             ft.Column([
-                                ft.Text(str(nowId + 1) + ". " + name),
+                                ft.Text(str(nowId+1) + ". " + name),
                                 ft.Text("by " + getArtist(name))
                             ])
                         ], width=400),
@@ -186,6 +194,17 @@ def AllPlaylistSongs(page: ft.Page, id):
     def change_bgcolor(e):
         e.control.bgcolor = "#212121" if e.data == "true" else card_color
         page.update()
+    def get_first_music_image(playlist_id):
+        musics = playlistConfig.get_all_playlist_musics(playlist_id, limit=1)
+        if musics:
+            return musics[0].replace(".mp3", ".jpg")
+        return "nothing/found"
+    def on_save_click(e):
+        playlistConfig.editPlaylistName(id, nameTxtField.value)
+        currentPlaylistTitle.value = nameTxtField.value + ":"
+        currentPlaylistTitle.update()
+        page.update()
+        page.close(modal_change_playlist_name)
 
     allSongsContainer = ft.Column(
         scroll=ft.ScrollMode.AUTO,
@@ -213,7 +232,34 @@ def AllPlaylistSongs(page: ft.Page, id):
     insert_all_songs(limit[0])
 
     currentPlaylistTitle = ft.Text(playlistConfig.getPlaylistNameByIndex(id) + ":", size=34, weight=ft.FontWeight.W_500)
-    durTot                       = ft.Text("Duração: " + musicConfig.getDuration())
+    durTot                       = ft.Text("Duração: " + playlistConfig.getDuration(id))
+    nameTxtField           = ft.TextField(value=playlistConfig.getPlaylistNameByIndex(id), color="white", border_color="white")
+
+    modal_change_playlist_name = ft.AlertDialog(
+        modal=True,
+        open=False,
+        title=ft.Text("Editar Nome da Playlist:"),
+        content=nameTxtField,
+        actions = [
+            ft.ElevatedButton(
+                text="Salvar",
+                bgcolor=background_color,
+                color="white",
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=6),
+                ),
+                on_click=on_save_click
+            ),
+            ft.ElevatedButton(
+                text="Cancelar",
+                bgcolor=foreground_color,
+                color="white",
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=6),
+                ),
+                on_click=lambda e: page.close(modal_change_playlist_name)
+            ),
+        ])
 
     configPlaylistButton = ft.PopupMenuButton(
         content=ft.Container(
@@ -232,6 +278,8 @@ def AllPlaylistSongs(page: ft.Page, id):
                 content=ft.Row([
                     ft.Icon(ft.Icons.EDIT, color="white"),
                     ft.Text("Editar Nome Playlist")]),
+
+                on_click=lambda e: page.open(modal_change_playlist_name),
             ),
             ft.PopupMenuItem(
                 content=ft.Row([ft.Icon(ft.Icons.ADD, color="white"), ft.Text("Adicionar Música", color="white")]),
@@ -279,7 +327,7 @@ def AllPlaylistSongs(page: ft.Page, id):
                 bgcolor=background_color,
                 padding=5,
             )
-    imagePlaylist = ft.Image(src=musicConfig.getPathByIndex(0).replace(".mp3", ".jpg"), width=100, height=100, fit=ft.ImageFit.COVER)
+
     allSongs = ft.Container(
         content=ft.Column([
             ft.Row([

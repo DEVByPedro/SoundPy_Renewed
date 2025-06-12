@@ -9,7 +9,6 @@ def get_user_pfp():
     if os.path.exists(fileJSON):
         with open (fileJSON, "r") as file:
             userProf = json.load(file)
-
         if userProf['pfp_path'] == "":
             return False
         else:
