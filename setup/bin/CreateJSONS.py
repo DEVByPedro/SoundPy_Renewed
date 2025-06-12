@@ -12,7 +12,7 @@ def createPlaylistJson():
         # Cria os dados iniciais
         dados = {
             "playlistNames": [[1, "Todas as Musicas"]],
-            "playlistMusics": [[1, "all"]]
+            "playlistMusics": [[1, []]]
         }
 
         with open(caminho_file, "w", encoding="utf-8") as file:

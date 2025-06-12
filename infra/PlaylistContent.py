@@ -93,6 +93,7 @@ def AllPlaylistSongs(page: ft.Page, id):
             imagePlaylist.update()
             durTot.value = "Duração: " + musicConfig.getDuration()
             durTot.update()
+            allSongsContainer.update()
             page.update()
         except Exception:
             return
