@@ -91,6 +91,11 @@ def getPlaylistMusicsById(e, id, body, page):
     body.update()
     page.update()
 def get_all_playlist_musics(id, limit):
+    def getPlaylistLen(id):
+        with open(fileJSON, "r") as file:
+            playlist = json.load(file)
+        return len(playlist["playlistMusics"][id - 1][1])
+
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
     musics = []
@@ -100,7 +105,7 @@ def get_all_playlist_musics(id, limit):
                 if len(pl[1]) == 0:
                     return []
                 if limit == "all":
-                    limit = len(musicConfig.get_all_musics())
+                    limit = getPlaylistLen(id)
                 else:
                     limit = int(limit)
                 if pl[1] == "all":

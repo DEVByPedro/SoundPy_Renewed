@@ -1,6 +1,7 @@
 import json
 from mutagen.mp3 import MP3
 import os
+import pygame
 
 fileJSON = os.path.join(os.path.abspath("configs/intFiles"), "Song.json")
 def addMusic(path: str):
@@ -111,3 +112,22 @@ def getIndexByPath(path:  str):
 
     except Exception as e:
         return f"Error: {e}"
+def playMusic(e, path: str):
+
+    if os.path.exists(path):
+        if path.endswith(".mp3"):
+            try:
+                pygame.init()
+                mixer = pygame.mixer
+                mixer.music.load(path)
+                mixer.music.play()
+
+                e.control.style.color = "#27e91d"
+                e.update()
+                print(e.control.style.color)
+                return True
+            except Exception as e:
+                return f"Error playing music: {e}"
+        return "Please, select a .mp3 file."
+    return "Path given does not exists"
+

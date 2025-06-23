@@ -305,6 +305,44 @@ def main(page: ft.Page):
         expand=False
     )
 
+    bottomContents = ft.Row([
+            ft.Row([
+                ft.Container(
+                    width=70,
+                    height=70,
+                    bgcolor=card_color,
+                ),
+                ft.Column([
+                    ft.Text("Teste"),
+                    ft.Text("Teste2")
+                ], width=70, height=50, alignment=ft.alignment.center),
+            ]),
+        ft.Column([
+            ft.Row([
+                ft.ElevatedButton(content=ft.Icon(ft.Icons.SKIP_PREVIOUS_SHARP, color="white")),
+                ft.ElevatedButton(content=ft.Icon(ft.Icons.PLAY_ARROW_SHARP, color="white")),
+                ft.ElevatedButton(content=ft.Icon(ft.Icons.SKIP_NEXT_SHARP, color="white"))
+            ], width=500, alignment=ft.MainAxisAlignment.CENTER),
+            ft.Slider(
+                width=500,
+                height=5,
+            )
+        ], alignment=ft.MainAxisAlignment.CENTER),
+        ft.Slider(
+            width=150,
+            height=5
+        )
+    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        expand=True
+    )
+
+    bottombar = ft.Container(
+        height=int(15/100 * page.height),
+        bgcolor="#0A0A0A",
+        content=bottomContents,
+        padding=10
+    )
+
     layout = ft.Row(
         controls=[sidebar, body],
         expand=True,
@@ -312,7 +350,7 @@ def main(page: ft.Page):
 
     # Coluna principal para manter o layout estável
     main_column = ft.Column(
-        controls=[topbar, layout],
+        controls=[topbar, ft.Column(controls=[layout, bottombar], expand=True)],
         expand=True,
     )
 

@@ -15,6 +15,7 @@ border_color = "#404040"
 icon_color = "#E0E0E0"
 equalizer_bar = "#6C6C6C"
 foreground_color = "#141414"
+current_music_color = "#27e91d"
 
 def change_hover(e):
     e.control.bgcolor = button_hover if e.data == "true" else foreground_color
@@ -88,14 +89,15 @@ def AllPlaylistSongs(page: ft.Page, id):
             for file in file_path:
                 playlistConfig.addMusic(id, file.name)
             allSongsContainer.controls.clear()
-            insert_all_songs()
+            insert_all_songs(limit[0])
             imagePlaylist.src = musicConfig.getPathByIndex(0).replace(".mp3", ".jpg")
             imagePlaylist.update()
             durTot.value = "Duração: " + musicConfig.getDuration()
             durTot.update()
             allSongsContainer.update()
             page.update()
-        except Exception:
+        except Exception as ex:
+            print(ex)
             return
     def change_checkBox_visibility(e):
         checkBox.visible = not checkBox.visible
@@ -171,7 +173,8 @@ def AllPlaylistSongs(page: ft.Page, id):
                                     overlay_color="transparent",
                                     elevation=0,
                                     padding=ft.Padding(top=0, left=0, right=5, bottom=0)
-                                )
+                                ),
+                                on_click=lambda e, p=path: musicConfig.playMusic(e,p),
                             ),
                             playlistImage,
                             ft.Column([
@@ -328,7 +331,6 @@ def AllPlaylistSongs(page: ft.Page, id):
                 bgcolor=background_color,
                 padding=5,
             )
-
     allSongs = ft.Container(
         content=ft.Column([
             ft.Row([
@@ -340,14 +342,14 @@ def AllPlaylistSongs(page: ft.Page, id):
                     ]),
                 ]),
                 ft.Row([
-                    configPlaylistButton,
                     ft.ElevatedButton(
                         content=ft.Icon(ft.Icons.PLAY_ARROW, color="black", size=25),
                         bgcolor="#27e91d",
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=50)),
                         width=50,
-                        height=50
-                    )
+                        height=50,
+                    ),
+                    configPlaylistButton,
                 ]),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Container(
@@ -374,5 +376,6 @@ def AllPlaylistSongs(page: ft.Page, id):
         animate=ft.Animation(150, "ease-in"),
         expand=True
     )
+
 
     return allSongs
