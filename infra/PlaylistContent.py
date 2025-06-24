@@ -79,7 +79,16 @@ def AllPlaylistSongs(page: ft.Page, id):
     allCheckedSongs = []
     music_checkboxes = []
     limit = [40]
+    current_playing_path = [None]
+    playing = False
 
+    def getMusicName(path: str):
+        count = path.count("-")
+        while count > 0:
+            indexOfTrace = path.index("-")
+            path = path[indexOfTrace + 2:]
+            count -= 1
+        return path
     def add_msc(e):
         try:
             tki = tk.Tk()
@@ -87,6 +96,8 @@ def AllPlaylistSongs(page: ft.Page, id):
             tki.attributes("-topmost", True)
             file_path = filedialog.askopenfiles(title="Selecione músicas", filetypes=[("MP3 Files", ".mp3")])
             for file in file_path:
+                if playlistConfig.containsMusic(id, file.name):
+                    continue
                 playlistConfig.addMusic(id, file.name)
             allSongsContainer.controls.clear()
             insert_all_songs(limit[0])
@@ -174,11 +185,11 @@ def AllPlaylistSongs(page: ft.Page, id):
                                     elevation=0,
                                     padding=ft.Padding(top=0, left=0, right=5, bottom=0)
                                 ),
-                                on_click=lambda e, p=path: musicConfig.playMusic(e,p),
+                                on_click=lambda e, p=path: changeAndPlayMusic(e, p, e.control),
                             ),
                             playlistImage,
                             ft.Column([
-                                ft.Text(str(nowId+1) + ". " + name),
+                                ft.Text(str(nowId+1) + ". " + getMusicName(name), weight=ft.FontWeight.W_700),
                                 ft.Text("by " + getArtist(name))
                             ])
                         ], width=400),
@@ -209,10 +220,38 @@ def AllPlaylistSongs(page: ft.Page, id):
         currentPlaylistTitle.update()
         page.update()
         page.close(modal_change_playlist_name)
+    def changeAndPlayMusic(e, path, button):
+        if current_playing_path[0] == path:
+            return
+        current_playing_path[0] = path
+        musicConfig.playMusic(e, path)
+        update_play_icons()
+
+        allSongs.update()
+        page.update()
+    def update_play_icons():
+        for idx, cb in enumerate(music_checkboxes):
+            container = allSongsContainer.controls[idx]
+            play_button = container.content.controls[0].controls[1]
+            duration_text = container.content.controls[1].content.controls[0].controls[0]
+            music_name = container.content.controls[0].controls[3].controls[0]
+            music_artist = container.content.controls[0].controls[3].controls[1]
+            path_btn = playlistConfig.get_all_playlist_musics(id, limit[0])[idx]
+            if path_btn == current_playing_path[0]:
+                play_button.content = ft.Icon(ft.Icons.PLAY_ARROW, color=current_music_color, size=20)
+                music_name.color = current_music_color
+                music_artist.color = current_music_color
+                duration_text.color = current_music_color
+            else:
+                play_button.content = ft.Icon(ft.Icons.PLAY_ARROW, color="white", size=20)
+                music_name.color = "white"
+                music_artist.color = "white"
+                duration_text.color = "white"
+            play_button.update()
 
     allSongsContainer = ft.Column(
         scroll=ft.ScrollMode.AUTO,
-        expand=True
+        expand=True,
     )
 
     checkBox = ft.Checkbox(
@@ -333,6 +372,11 @@ def AllPlaylistSongs(page: ft.Page, id):
             )
     allSongs = ft.Container(
         content=ft.Column([
+            ft.Container(
+                height=int(30/100 * page.height),
+                expand=True,
+                margin=ft.Margin(bottom=10, left=0, right=0, top=0),
+            ),
             ft.Row([
                 ft.Row([
                     ft.Container(content=imagePlaylist),
@@ -357,24 +401,40 @@ def AllPlaylistSongs(page: ft.Page, id):
                     ft.Row([
                         ft.Row([checkBox, confirmButton]),
                         ft.Text("Nome", width=200, text_align=ft.TextAlign.CENTER)
-                    ], width=250, alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    ], width=250,
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                    ),
                     ft.Text("Duração", text_align=ft.TextAlign.CENTER),
                     ft.Text("")
-                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                padding=ft.Padding(top=10, left=0, bottom=0, right=-100),
-                bgcolor=background_color,
-                margin=ft.Margin(top=20, left=0, right=0, bottom=0)
+                ],  alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    padding=ft.Padding(top=10, left=0, bottom=0, right=-100),
+                    bgcolor=background_color,
+                    margin=ft.Margin(top=20, left=0, right=0, bottom=0)
             ),
-            allSongsContainer,
-            bottomBar
-        ], expand=True),
+            ft.Container(
+                ft.Column([
+                    allSongsContainer,
+                    bottomBar
+                ],
+                    height=int(57/100 * page.height),
+                    scroll=ft.ScrollMode.AUTO,
+                ),
+                padding=ft.Padding(top=0, left=10, right=0, bottom=0),
+            )
+        ], expand=True,
+            scroll=ft.ScrollMode.AUTO,
+        ),
         padding=20,
         margin=ft.Margin(top=20, left=10, right=0, bottom=0),
-        bgcolor=card_color,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_center,
+            end=ft.alignment.center,
+            colors=[playlistConfig.getPhotoImage(playlistConfig.get_all_playlist_musics(id, 1)[0]), card_color],
+        ),
         border_radius=10,
-        on_hover=change_bgcolor,
         animate=ft.Animation(150, "ease-in"),
-        expand=True
+        expand=True,
+        height=400
     )
 
 

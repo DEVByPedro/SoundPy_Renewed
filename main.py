@@ -1,6 +1,3 @@
-from pygame.sprite import \
-    collide_circle_ratio
-
 import setup.bin.InstallDependencies as insDep
 import setup.bin.CreateJSONS as createJSONs
 insDep.installDependencies()
@@ -9,9 +6,7 @@ createJSONs.createJsonSetup()
 import configs.UserConfig as userConfig
 import configs.PlaylistConfig as playlistConfig
 import infra.Home as homePage
-import infra.BodyContent as bodyContent
 import flet as ft
-
 def main(page: ft.Page):
     page.padding = 0
     page.bgcolor = "#121212"
@@ -32,6 +27,7 @@ def main(page: ft.Page):
     playlists_buttons = []
     submenu = ft.Column(controls=playlists_buttons, opacity=1.0, animate_opacity=300)
     expanded = False
+    expandedSidebar = False
 
     # Modal para criar playlist
     playlist_modal = ft.AlertDialog(
@@ -114,9 +110,22 @@ def main(page: ft.Page):
         criarPlaylistButton.visible = True
         submenu.controls = playlists_buttons
         page.update()
+    def open_sidebar(e):
+        nonlocal expandedSidebar
+        expandedSidebar = not expandedSidebar
+        if expandedSidebar:
+            sidebar.bgcolor = foreground_color
+            for txt in text_refs:
+                txt.opacity = 1
+                txt.offset = ft.Offset(0, 0)
+            for btn in buttons:
+                btn.width = 180
+            sidebar.width = 200
     def toggle_sidebar(e):
+        nonlocal expandedSidebar
         nonlocal expanded
-        if e.data == "true":
+        expandedSidebar = not expandedSidebar
+        if expandedSidebar:
             sidebar.bgcolor = foreground_color
             for txt in text_refs:
                 txt.opacity = 1
@@ -125,6 +134,7 @@ def main(page: ft.Page):
                 btn.width = 180
             sidebar.width = 200
         else:
+            expandedSidebar = False
             expanded = False
             submenu.visible = False
             for btn in submenu.controls:
@@ -141,6 +151,7 @@ def main(page: ft.Page):
         nonlocal expanded
         expanded = not expanded
         if expanded:
+            open_sidebar(e)
             upgrade_playlist()
             submenu.visible = True
             criarPlaylistButton.visible = True
@@ -170,11 +181,6 @@ def main(page: ft.Page):
             txt.update()
             icon.update()
         return handle_hover
-    def show_all_msc(e):
-        body_column.controls.clear()
-        body_column.controls.append(bodyContent.AllSongs(page))
-        body_column.update()
-        page.update()
     def show_mainMenu(e):
         body_column.controls.clear()
         body_column.controls.append(homePage.body(page))
@@ -200,6 +206,7 @@ def main(page: ft.Page):
         changeButton.update()
 
     menu_items = [
+        ("Menu", ft.Icons.MENU_SHARP, toggle_sidebar),
         ("Home", ft.Icons.HOME, show_mainMenu),
         ("Fav. Songs", ft.Icons.BOOKMARK_ADD_SHARP, show_all_fav),
         ("Playlists", ft.Icons.PLAYLIST_PLAY_SHARP, toggle_menu),
@@ -249,7 +256,7 @@ def main(page: ft.Page):
         padding=ft.Padding(top=10, right=5, left=10, bottom=10),
         animate=ft.Animation(200, "easeInOut"),
         margin=ft.Margin(top=-10, bottom=0, left=0, right=0),
-        on_hover=toggle_sidebar,
+        #on_hover=toggle_sidebar,
         expand=False
     )
 
@@ -348,16 +355,15 @@ def main(page: ft.Page):
         expand=True,
     )
 
-    # Coluna principal para manter o layout estável
     main_column = ft.Column(
         controls=[topbar, ft.Column(controls=[layout, bottombar], expand=True)],
         expand=True,
     )
 
-    # Inicializa com a tela principal
     body_column.controls.clear()
     body_column.controls.append(homePage.body(page))
 
+    page.window.maximized = True
     page.add(main_column)
 
 ft.app(target=main)

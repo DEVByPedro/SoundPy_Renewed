@@ -1,6 +1,7 @@
 import json
 import os
 from mutagen.mp3 import MP3
+from PIL import Image
 
 import configs.MusicConfig as musicConfig
 import infra.BodyContent as bodyContent
@@ -159,3 +160,24 @@ def editPlaylistName(idPlaylist, newName):
     with open(fileJSON, "w") as file:
         json.dump(playlist, file, indent=4)
     return "Edited"
+def containsMusic(id, path):
+    with open(fileJSON, "r") as file:
+        playlist = json.load(file)
+    for play in playlist["playlistMusics"]:
+        if play[0] == id:
+            if path in play[1]:
+                return True
+    return False
+def getPhotoImage(path: str):
+    if os.path.exists(path):
+        if path.endswith(".mp3"):
+            new_path = os.path.abspath(path.replace(".mp3", ".jpg"))
+            if os.path.exists(new_path):
+                img = Image.open(new_path)
+                width, height = img.size
+                x = width // 2
+                y = 0
+                r, g, b = img.getpixel((x, y))
+                return '#{:02x}{:02x}{:02x}'.format(r, g, b)
+        return "No Image Found"
+    return "This path does not exist"
