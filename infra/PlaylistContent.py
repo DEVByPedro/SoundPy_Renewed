@@ -3,22 +3,14 @@ import flet as ft
 import tkinter as tk
 from tkinter import filedialog
 
+import configs.Colors as colors
 import configs.MusicConfig as musicConfig
 import configs.PlaylistConfig as playlistConfig
 
-background_color = "#121212"
-card_color = "#1E1E1E"
-text_primary = "#FFFFFF"
-text_secondary = "#C7C7C7"
-button_hover = "#2C2C2C"
-border_color = "#404040"
-icon_color = "#E0E0E0"
-equalizer_bar = "#6C6C6C"
-foreground_color = "#141414"
-current_music_color = "#27e91d"
+import configs.Core as music
 
 def change_hover(e):
-    e.control.bgcolor = button_hover if e.data == "true" else foreground_color
+    e.control.bgcolor = colors.button_hover if e.data == "true" else colors.foreground_color
     e.control.update()
 
 def AllPlaylistSongs(page: ft.Page, id):
@@ -48,7 +40,7 @@ def AllPlaylistSongs(page: ft.Page, id):
             ft.ElevatedButton(
                 text="Cancelar",
                 on_click=lambda e: page.close(modal_confirm),
-                bgcolor=foreground_color,
+                bgcolor=colors.foreground_color,
                 color="white",
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=6),
@@ -101,14 +93,13 @@ def AllPlaylistSongs(page: ft.Page, id):
                 playlistConfig.addMusic(id, file.name)
             allSongsContainer.controls.clear()
             insert_all_songs(limit[0])
-            imagePlaylist.src = musicConfig.getPathByIndex(0).replace(".mp3", ".jpg")
-            imagePlaylist.update()
+            imagePlaylist.src = musicConfig.getPathByIndex(0)
             durTot.value = "Duração: " + musicConfig.getDuration()
             durTot.update()
             allSongsContainer.update()
+            imagePlaylist.update()
             page.update()
         except Exception as ex:
-            print(ex)
             return
     def change_checkBox_visibility(e):
         checkBox.visible = not checkBox.visible
@@ -199,7 +190,7 @@ def AllPlaylistSongs(page: ft.Page, id):
                             padding=ft.Padding(top=5, right=0, left=0, bottom=0))
                     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                     on_hover=change_hover,
-                    bgcolor=foreground_color,
+                    bgcolor=colors.foreground_color,
                     height=70,
                     padding=10,
                     border_radius=5,
@@ -207,7 +198,7 @@ def AllPlaylistSongs(page: ft.Page, id):
                 )
             )
     def change_bgcolor(e):
-        e.control.bgcolor = "#212121" if e.data == "true" else card_color
+        e.control.bgcolor = "#212121" if e.data == "true" else colors.card_color
         page.update()
     def get_first_music_image(playlist_id):
         musics = playlistConfig.get_all_playlist_musics(playlist_id, limit=1)
@@ -222,6 +213,7 @@ def AllPlaylistSongs(page: ft.Page, id):
         page.close(modal_change_playlist_name)
     def changeAndPlayMusic(e, path, button):
         if current_playing_path[0] == path:
+            music.setArtist("Nome Desconhecido")
             return
         current_playing_path[0] = path
         musicConfig.playMusic(e, path)
@@ -238,16 +230,17 @@ def AllPlaylistSongs(page: ft.Page, id):
             music_artist = container.content.controls[0].controls[3].controls[1]
             path_btn = playlistConfig.get_all_playlist_musics(id, limit[0])[idx]
             if path_btn == current_playing_path[0]:
-                play_button.content = ft.Icon(ft.Icons.PLAY_ARROW, color=current_music_color, size=20)
-                music_name.color = current_music_color
-                music_artist.color = current_music_color
-                duration_text.color = current_music_color
+                play_button.content = ft.Icon(ft.Icons.PLAY_ARROW, color=colors.current_music_color, size=20)
+                music_name.color = colors.current_music_color
+                music_artist.color = colors.current_music_color
+                duration_text.color = colors.current_music_color
             else:
                 play_button.content = ft.Icon(ft.Icons.PLAY_ARROW, color="white", size=20)
                 music_name.color = "white"
                 music_artist.color = "white"
                 duration_text.color = "white"
             play_button.update()
+            page.update()
 
     allSongsContainer = ft.Column(
         scroll=ft.ScrollMode.AUTO,
@@ -286,7 +279,7 @@ def AllPlaylistSongs(page: ft.Page, id):
         actions = [
             ft.ElevatedButton(
                 text="Salvar",
-                bgcolor=background_color,
+                bgcolor=colors.background_color,
                 color="white",
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=6),
@@ -295,7 +288,7 @@ def AllPlaylistSongs(page: ft.Page, id):
             ),
             ft.ElevatedButton(
                 text="Cancelar",
-                bgcolor=foreground_color,
+                bgcolor=colors.foreground_color,
                 color="white",
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=6),
@@ -309,7 +302,7 @@ def AllPlaylistSongs(page: ft.Page, id):
             content=ft.Row([
                 ft.Icon(ft.Icons.EXPAND_MORE_OUTLINED, color="white", size=20)
             ]),
-            bgcolor=background_color,
+            bgcolor=colors.background_color,
             border_radius=3,
             padding=5
         ),
@@ -367,7 +360,7 @@ def AllPlaylistSongs(page: ft.Page, id):
                         }
                     ),
                 ], alignment=ft.MainAxisAlignment.CENTER),
-                bgcolor=background_color,
+                bgcolor=colors.background_color,
                 padding=5,
             )
     allSongs = ft.Container(
@@ -408,7 +401,7 @@ def AllPlaylistSongs(page: ft.Page, id):
                     ft.Text("")
                 ],  alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                     padding=ft.Padding(top=10, left=0, bottom=0, right=-100),
-                    bgcolor=background_color,
+                    bgcolor=colors.background_color,
                     margin=ft.Margin(top=20, left=0, right=0, bottom=0)
             ),
             ft.Container(
@@ -420,21 +413,23 @@ def AllPlaylistSongs(page: ft.Page, id):
                     scroll=ft.ScrollMode.AUTO,
                 ),
                 padding=ft.Padding(top=0, left=10, right=0, bottom=0),
+                bgcolor=colors.card_color,
+                border_radius=20,
+
             )
         ], expand=True,
             scroll=ft.ScrollMode.AUTO,
         ),
         padding=20,
-        margin=ft.Margin(top=20, left=10, right=0, bottom=0),
+        margin=ft.Margin(top=0, left=10, right=0, bottom=0),
         gradient=ft.LinearGradient(
             begin=ft.alignment.top_center,
             end=ft.alignment.center,
-            colors=[playlistConfig.getPhotoImage(playlistConfig.get_all_playlist_musics(id, 1)[0]), card_color],
+            colors=[playlistConfig.getPhotoImage(playlistConfig.getMusicByIndex(id, 0)), colors.card_color],
         ),
         border_radius=10,
         animate=ft.Animation(150, "ease-in"),
         expand=True,
-        height=400
     )
 
 

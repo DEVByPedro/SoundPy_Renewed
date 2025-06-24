@@ -180,4 +180,14 @@ def getPhotoImage(path: str):
                 r, g, b = img.getpixel((x, y))
                 return '#{:02x}{:02x}{:02x}'.format(r, g, b)
         return "No Image Found"
-    return "This path does not exist"
+    return "#0A0A0A"
+def getMusicByIndex(idPlaylist, index):
+    with open(fileJSON, "r") as file:
+        playlist = json.load(file)
+
+    try:
+        for play in playlist["playlistMusics"]:
+            if play[0] == idPlaylist:
+                return play[1][index]
+    except Exception as e:
+        return ""

@@ -5,22 +5,17 @@ createJSONs.createJsonSetup()
 
 import configs.UserConfig as userConfig
 import configs.PlaylistConfig as playlistConfig
+import configs.Colors as colors
+
+import configs.Core as musicCore
+
 import infra.Home as homePage
+
 import flet as ft
+
 def main(page: ft.Page):
     page.padding = 0
-    page.bgcolor = "#121212"
-
-    # Cores
-    background_color = "#121212"
-    card_color = "#1E1E1E"
-    text_primary = "#FFFFFF"
-    text_secondary = "#C7C7C7"
-    button_hover = "#2C2C2C"
-    border_color = "#404040"
-    icon_color = "#E0E0E0"
-    equalizer_bar = "#6C6C6C"
-    foreground_color = "#141414"
+    page.bgcolor = colors.background_color
 
     buttons = []
     text_refs = []
@@ -35,17 +30,17 @@ def main(page: ft.Page):
         modal=True,
         title=ft.Text("Criar Playlist:"),
         content=ft.TextField(hint_text="Nome da Playlist",
-                             border_color=text_primary,
+                             border_color=colors.text_primary,
                              on_submit=lambda e: [
                                 playlistConfig.add_playlist(playlist_modal.content.value),
                                 page.close(playlist_modal),
                                 upgrade_playlist()]
                              ),
-        bgcolor=card_color,
+        bgcolor=colors.card_color,
         actions=[
             ft.ElevatedButton(
                 text="Criar",
-                bgcolor=foreground_color,
+                bgcolor=colors.foreground_color,
                 color="white",
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
                 on_click=lambda e: [
@@ -66,7 +61,7 @@ def main(page: ft.Page):
 
     criarPlaylistButton = ft.ElevatedButton(
         text="Criar Nova Playlist",
-        bgcolor=card_color,
+        bgcolor=colors.card_color,
         color="white",
         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
         height=40,
@@ -77,7 +72,7 @@ def main(page: ft.Page):
     # Body central
     body_column = ft.Column([], expand=True)
     body = ft.Container(
-        bgcolor=background_color,
+        bgcolor=colors.background_color,
         content=body_column,
         padding=10,
         margin=ft.Margin(top=-10, bottom=0, left=-10, right=0),
@@ -100,7 +95,7 @@ def main(page: ft.Page):
                     ], height=40),
                 ]),
                 color="white",
-                bgcolor=card_color,
+                bgcolor=colors.card_color,
                 height=50,
                 width=250,
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
@@ -114,7 +109,7 @@ def main(page: ft.Page):
         nonlocal expandedSidebar
         expandedSidebar = not expandedSidebar
         if expandedSidebar:
-            sidebar.bgcolor = foreground_color
+            sidebar.bgcolor = colors.foreground_color
             for txt in text_refs:
                 txt.opacity = 1
                 txt.offset = ft.Offset(0, 0)
@@ -126,7 +121,7 @@ def main(page: ft.Page):
         nonlocal expanded
         expandedSidebar = not expandedSidebar
         if expandedSidebar:
-            sidebar.bgcolor = foreground_color
+            sidebar.bgcolor = colors.foreground_color
             for txt in text_refs:
                 txt.opacity = 1
                 txt.offset = ft.Offset(0, 0)
@@ -139,7 +134,7 @@ def main(page: ft.Page):
             submenu.visible = False
             for btn in submenu.controls:
                 btn.opacity = 0.0
-            sidebar.bgcolor = foreground_color
+            sidebar.bgcolor = colors.foreground_color
             for btn in buttons:
                 btn.width = 40
             for txt in text_refs:
@@ -167,17 +162,17 @@ def main(page: ft.Page):
     def show_all_fav(e):
         body_column.controls.clear()
         body_column.controls.append(ft.Container(
-            content=ft.Text("Favoritos ainda não implementado.", color=text_secondary, size=20),
+            content=ft.Text("Favoritos ainda não implementado.", color=colors.text_secondary, size=20),
             alignment=ft.alignment.center,
             expand=True,
-            bgcolor=background_color
+            bgcolor=colors.background_color
         ))
         body_column.update()
         page.update()
     def create_hover_handler(txt, icon):
         def handle_hover(e):
-            txt.color = text_secondary if e.data == "true" else text_primary
-            icon.color = text_secondary if e.data == "true" else text_primary
+            txt.color = colors.text_secondary if e.data == "true" else colors.text_primary
+            icon.color = colors.text_secondary if e.data == "true" else colors.text_primary
             txt.update()
             icon.update()
         return handle_hover
@@ -217,7 +212,7 @@ def main(page: ft.Page):
             value=label,
             size=15,
             weight=ft.FontWeight.W_400,
-            color=text_primary,
+            color=colors.text_primary,
             opacity=0,
             offset=ft.Offset(-0.3, 0),
             animate_opacity=100,
@@ -235,9 +230,9 @@ def main(page: ft.Page):
                     expand=True,
                 ),
                 style=ft.ButtonStyle(
-                    bgcolor=card_color,
+                    bgcolor=colors.card_color,
                     shape=ft.RoundedRectangleBorder(radius=5),
-                    overlay_color=button_hover,
+                    overlay_color=colors.button_hover,
                 ),
                 width=40,
                 height=40,
@@ -250,13 +245,12 @@ def main(page: ft.Page):
 
     sidebar = ft.Container(
         content=ft.Column(buttons, scroll="auto", expand=True),
-        bgcolor=foreground_color,
+        bgcolor=colors.foreground_color,
         width=60,
         alignment=ft.alignment.top_left,
         padding=ft.Padding(top=10, right=5, left=10, bottom=10),
         animate=ft.Animation(200, "easeInOut"),
         margin=ft.Margin(top=-10, bottom=0, left=0, right=0),
-        #on_hover=toggle_sidebar,
         expand=False
     )
 
@@ -296,15 +290,15 @@ def main(page: ft.Page):
         content=ft.Row([
             ft.Text(width=80),
             ft.TextField(
-                border_color=text_secondary,
+                border_color=colors.text_secondary,
                 width=550,
                 hint_text="Procurar Músicas",
-                prefix_icon=ft.Icon(ft.Icons.SEARCH_OUTLINED, color=text_secondary, size=18),
+                prefix_icon=ft.Icon(ft.Icons.SEARCH_OUTLINED, color=colors.text_secondary, size=18),
                 border_radius=25
             ),
             userProfile,
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-        bgcolor=foreground_color,
+        bgcolor=colors.foreground_color,
         height=70,
         padding=10,
         margin=ft.Margin(top=0, bottom=0, left=0, right=0),
@@ -317,18 +311,20 @@ def main(page: ft.Page):
                 ft.Container(
                     width=70,
                     height=70,
-                    bgcolor=card_color,
+                    bgcolor="#0A0A0A",
                 ),
                 ft.Column([
-                    ft.Text("Teste"),
-                    ft.Text("Teste2")
-                ], width=70, height=50, alignment=ft.alignment.center),
+                    ft.Text(musicCore.getTitle() if len(musicCore.getTitle()) < 100 else musicCore.getTitle()[:100] + "..."),
+                    ft.Text(musicCore.getArtist())
+                ], height=50, alignment=ft.alignment.center, expand=True),
             ]),
         ft.Column([
             ft.Row([
+                ft.ElevatedButton(content=ft.Icon(ft.Icons.SHUFFLE_SHARP), color="white", bgcolor="transparent", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=50))),
                 ft.ElevatedButton(content=ft.Icon(ft.Icons.SKIP_PREVIOUS_SHARP, color="white")),
-                ft.ElevatedButton(content=ft.Icon(ft.Icons.PLAY_ARROW_SHARP, color="white")),
-                ft.ElevatedButton(content=ft.Icon(ft.Icons.SKIP_NEXT_SHARP, color="white"))
+                ft.ElevatedButton(content=ft.Icon(ft.Icons.PLAY_ARROW_SHARP, color="black"), bgcolor="white", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=50))),
+                ft.ElevatedButton(content=ft.Icon(ft.Icons.SKIP_NEXT_SHARP, color="white")),
+                ft.ElevatedButton(content=ft.Icon(ft.Icons.REPEAT), color="white", bgcolor="transparent", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=50))),
             ], width=500, alignment=ft.MainAxisAlignment.CENTER),
             ft.Slider(
                 width=500,
