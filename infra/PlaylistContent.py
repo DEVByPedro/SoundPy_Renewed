@@ -6,6 +6,7 @@ from tkinter import filedialog
 import configs.Colors as colors
 import configs.MusicConfig as musicConfig
 import configs.PlaylistConfig as playlistConfig
+import sysConf.Downloader as downloader
 
 import configs.Core as music
 
@@ -21,6 +22,9 @@ def AllPlaylistSongs(page: ft.Page, id):
     def deletePlaylist(e, playlist_id):
         playlistConfig.remove_playlist_by_name(playlistConfig.getPlaylistNameByIndex(playlist_id))
         page.close(modal_confirm)
+    def downloadMusic(e, link):
+        page.close(modal)
+        downloader.download_mp3(e, ytLink.value)
 
     modal_confirm = ft.AlertDialog(
         modal=True,
@@ -57,7 +61,13 @@ def AllPlaylistSongs(page: ft.Page, id):
         actions=[
             ft.ElevatedButton(
                 text="Ok",
-                on_click=lambda e: page.close(modal)
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=6),
+                    padding=ft.Padding(top=0, right=10, left=10, bottom=0),
+                    bgcolor="white",
+                    color="black"
+                ),
+                on_click=lambda e: downloadMusic(e, ytLink.value)
             ),
             ft.ElevatedButton(
                 text="Cancelar",
@@ -269,7 +279,7 @@ def AllPlaylistSongs(page: ft.Page, id):
 
     currentPlaylistTitle = ft.Text(playlistConfig.getPlaylistNameByIndex(id) + ":", size=34, weight=ft.FontWeight.W_500)
     durTot                       = ft.Text("Duração: " + playlistConfig.getDuration(id))
-    nameTxtField           = ft.TextField(value=playlistConfig.getPlaylistNameByIndex(id), color="white", border_color="white")
+    nameTxtField           = ft.TextField(value=playlistConfig.getPlaylistNameByIndex(id), color="white", border_color="white", on_submit=on_save_click)
 
     modal_change_playlist_name = ft.AlertDialog(
         modal=True,
