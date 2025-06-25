@@ -329,11 +329,13 @@ def main(page: ft.Page):
             ft.Slider(
                 width=500,
                 height=5,
+                active_color="white"
             )
         ], alignment=ft.MainAxisAlignment.CENTER),
         ft.Slider(
             width=150,
-            height=5
+            height=5,
+            active_color="white"
         )
     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         expand=True
