@@ -2,8 +2,13 @@ import json
 from mutagen.mp3 import MP3
 import os
 import pygame
+import flet as ft
 
 fileJSON = os.path.join(os.path.abspath("configs/intFiles"), "Song.json")
+status = {"is_paused": None}
+pygame.init()
+mixer = pygame.mixer
+
 def addMusic(path: str):
 
     if len(path) > 0:
@@ -24,6 +29,7 @@ def addMusic(path: str):
             getDuration()
 
             return True
+
 def getPathByIndex(index: int):
     try:
         with open(fileJSON, "r") as file:
@@ -33,6 +39,7 @@ def getPathByIndex(index: int):
 
     except Exception as e:
         return "No path found on index: " + str(index)
+
 def deleteByIndex(index: int):
     try:
         with open(fileJSON, "r") as file:
@@ -47,6 +54,7 @@ def deleteByIndex(index: int):
         return True
     except Exception as e:
         return "No paths excluded."
+
 def get_all_musics():
     try:
         with open(fileJSON, "r") as file:
@@ -59,6 +67,7 @@ def get_all_musics():
         return allPaths
     except Exception as e:
         return "Error: "+ e
+
 def getDuration():
     try:
         with open(fileJSON, "r") as file:
@@ -87,6 +96,7 @@ def getDuration():
 
     except Exception as e:
         return "00:00:00"
+
 def getIndividualDuration(path: str):
     if os.path.exists(path):
         if path.endswith(".mp3"):
@@ -101,6 +111,7 @@ def getIndividualDuration(path: str):
             return f"{round(minutes):02d}:{round(seconds):02d}"
         return "Please, select a .mp3 file."
     return "Path given does not exists"
+
 def getIndexByPath(path:  str):
     try:
         with open(fileJSON, "r") as file:
@@ -112,22 +123,36 @@ def getIndexByPath(path:  str):
 
     except Exception as e:
         return f"Error: {e}"
+
 def playMusic(e, path: str):
 
-    if os.path.exists(path):
-        if path.endswith(".mp3"):
-            try:
-                pygame.init()
-                mixer = pygame.mixer
-                mixer.music.load(path)
-                mixer.music.play()
+    if not os.path.exists(path):
+        return "Path given does not exists"
 
-                e.control.style.color = "#27e91d"
-                e.update()
-                print(e.control.style.color)
-                return True
-            except Exception as e:
-                return f"Error playing music: {e}"
-        return "Please, select a .mp3 file."
-    return "Path given does not exists"
+    if path.endswith(".mp3"):
+        try:
+            mixer.music.load(path)
 
+            if status["is_paused"] == False:
+                mixer.pause()
+                status["is_paused"] = True
+            elif status["is_paused"] == True:
+                mixer.unpause()
+                status["is_paused"] = False
+            mixer.music.play()
+
+            if mixer.get_busy() == False:
+                status["is_paused"] = None
+
+            e.control.style.color = "#27e91d"
+            e.control = ft.Icon(ft.Icons.PAUSE_SHARP, color="white", size=20)
+            e.update()
+        except Exception as e:
+            return f"Error playing music: {e}"
+    return "Please, select a .mp3 file."
+
+def stopSong():
+    if mixer.get_busy():
+        mixer.music.stop()
+        return
+    return

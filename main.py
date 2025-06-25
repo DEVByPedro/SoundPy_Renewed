@@ -88,7 +88,7 @@ def main(page: ft.Page):
         for idx, playlist in enumerate(playlistConfig.get_all_playlists()):
             button = ft.ElevatedButton(
                 content=ft.Row([
-                    ft.Icon(ft.Icons.MUSIC_NOTE_ROUNDED),
+                    ft.Icon(ft.Icons.MUSIC_NOTE_ROUNDED, color="white"),
                     ft.Column([
                         ft.Text(value=playlist[1], size=12),
                         ft.Text("Duração: " + playlistConfig.getDuration(playlist[0]), size=10, color="grey")

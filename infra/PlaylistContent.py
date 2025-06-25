@@ -3,6 +3,8 @@ import flet as ft
 import tkinter as tk
 from tkinter import filedialog
 
+import pygame
+
 import configs.Colors as colors
 import configs.MusicConfig as musicConfig
 import configs.PlaylistConfig as playlistConfig
@@ -22,9 +24,13 @@ def AllPlaylistSongs(page: ft.Page, id):
     def deletePlaylist(e, playlist_id):
         playlistConfig.remove_playlist_by_name(playlistConfig.getPlaylistNameByIndex(playlist_id))
         page.close(modal_confirm)
-    def downloadMusic(e, link):
+
+    def downloadMusic(e, link, id):
         page.close(modal)
-        downloader.download_mp3(e, ytLink.value)
+        if downloader.download_mp3(e, ytLink.value, id) == True:
+            allSongsContainer.controls.clear()
+            insert_all_songs(limit[0])
+            page.update()
 
     modal_confirm = ft.AlertDialog(
         modal=True,
@@ -67,7 +73,7 @@ def AllPlaylistSongs(page: ft.Page, id):
                     bgcolor="white",
                     color="black"
                 ),
-                on_click=lambda e: downloadMusic(e, ytLink.value)
+                on_click=lambda e: downloadMusic(e, ytLink.value, id)
             ),
             ft.ElevatedButton(
                 text="Cancelar",
@@ -82,7 +88,6 @@ def AllPlaylistSongs(page: ft.Page, id):
     music_checkboxes = []
     limit = [40]
     current_playing_path = [None]
-    playing = False
 
     def getMusicName(path: str):
         count = path.count("-")
@@ -98,16 +103,11 @@ def AllPlaylistSongs(page: ft.Page, id):
             tki.attributes("-topmost", True)
             file_path = filedialog.askopenfiles(title="Selecione músicas", filetypes=[("MP3 Files", ".mp3")])
             for file in file_path:
-                if playlistConfig.containsMusic(id, file.name):
-                    continue
-                playlistConfig.addMusic(id, file.name)
+                if not playlistConfig.containsMusic(id, file.name):
+                    playlistConfig.addMusic(id, file.name)
             allSongsContainer.controls.clear()
             insert_all_songs(limit[0])
-            imagePlaylist.src = musicConfig.getPathByIndex(0)
-            durTot.value = "Duração: " + musicConfig.getDuration()
-            durTot.update()
-            allSongsContainer.update()
-            imagePlaylist.update()
+
             page.update()
         except Exception as ex:
             return
@@ -122,13 +122,14 @@ def AllPlaylistSongs(page: ft.Page, id):
         for cb in music_checkboxes:
             cb.value = True if e.data == 'true' else False
             if e.data == 'true':
-                for path in musicConfig.get_all_musics():
+                for path in playlistConfig.get_all_playlist_musics(id, "all"):
                     if path not in allCheckedSongs:
                         allCheckedSongs.append(path)
         if e.data == 'false':
             allCheckedSongs.clear()
         page.update()
     def excludeSongs(e):
+
         if allCheckedSongs:
             for path in allCheckedSongs:
                 playlistConfig.deleteByIndex(id, playlistConfig.getIndexByPath(id, path))
@@ -140,12 +141,9 @@ def AllPlaylistSongs(page: ft.Page, id):
             cb.value = False
         allSongsContainer.controls.clear()
         insert_all_songs(limit[0])
-        imagePlaylist.src = musicConfig.getPathByIndex(0).replace(".mp3", ".jpg")
-        durTot.value = "Duração: " + musicConfig.getDuration()
-        durTot.update()
-        imagePlaylist.update()
-        allSongsContainer.update()
-        allSongs.update()
+
+        musicConfig.stopSong()
+
         page.update()
     def getArtist(name):
         return name.split("-")[0] if "-" in name else "Unknown Artist"
@@ -207,9 +205,6 @@ def AllPlaylistSongs(page: ft.Page, id):
                     animate=ft.Animation(100, "easeIn"),
                 )
             )
-    def change_bgcolor(e):
-        e.control.bgcolor = "#212121" if e.data == "true" else colors.card_color
-        page.update()
     def get_first_music_image(playlist_id):
         musics = playlistConfig.get_all_playlist_musics(playlist_id, limit=1)
         if musics:
@@ -251,6 +246,13 @@ def AllPlaylistSongs(page: ft.Page, id):
                 duration_text.color = "white"
             play_button.update()
             page.update()
+    def check_checkboxes(e):
+        if (checkBox.visible == True and confirmButton.visible == True):
+            checkBox.visible = False
+            confirmButton.visible = False
+            for box in music_checkboxes:
+                box.visible = False
+        page.update()
 
     allSongsContainer = ft.Column(
         scroll=ft.ScrollMode.AUTO,
@@ -319,6 +321,7 @@ def AllPlaylistSongs(page: ft.Page, id):
         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=3)),
         width=30,
         height=30,
+        on_open=check_checkboxes,
         items=[
             ft.PopupMenuItem(
                 content=ft.Row([

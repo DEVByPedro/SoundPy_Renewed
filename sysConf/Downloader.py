@@ -1,3 +1,5 @@
+import configs.PlaylistConfig as playlistConfig
+
 import subprocess
 import os
 import platform
@@ -5,7 +7,8 @@ import urllib.request
 import zipfile
 import shutil
 
-def download_mp3(e, video_url):
+
+def download_mp3(e, video_url, idPlaylist):
 
     if not os.path.exists("sysConf/ffmpeg-2025-03-31-git-35c091f4b7-essentials_build"):
         so = platform.system()
@@ -47,6 +50,7 @@ def download_mp3(e, video_url):
         "--convert-thumbnails", "jpg",
         "--ffmpeg-location", ffmpegpath,
         "-o", output_template,
+        "--print", "after_move:filepath",
         video_url
     ]
 
@@ -55,6 +59,9 @@ def download_mp3(e, video_url):
 
         for line in process.stdout:
             print(line, end='')
+            if line.strip().endswith(".mp3"):
+                playlistConfig.addMusic(idPlaylist, line.strip())
+                page.update()
 
         process.wait()
         if process.returncode == 0:
