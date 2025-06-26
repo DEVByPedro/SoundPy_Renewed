@@ -6,12 +6,14 @@ createJSONs.createJsonSetup()
 import configs.UserConfig as userConfig
 import configs.PlaylistConfig as playlistConfig
 import configs.Colors as colors
-
-import configs.Core as musicCore
+import configs.Core as core
 
 import infra.Home as homePage
 
 import flet as ft
+
+crnt_msc = ft.Text("", size=16, color="white")
+crnt_artist = ft.Text("", size=12, color="grey")
 
 def main(page: ft.Page):
     page.padding = 0
@@ -80,8 +82,8 @@ def main(page: ft.Page):
         alignment=ft.alignment.top_left,
     )
 
-    def selectAndCloseSideBar(e, playlist_id, body, page):
-        playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page)
+    def selectAndCloseSideBar(e, playlist_id, body, page, crnt_msc, crnt_artist):
+        playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page, crnt_msc, crnt_artist)
 
         toggle_sidebar(e)
 
@@ -106,7 +108,7 @@ def main(page: ft.Page):
                 height=50,
                 width=250,
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
-                on_click=lambda e, playlist_id=playlist[0]: selectAndCloseSideBar(e, playlist_id, body, page)
+                on_click=lambda e, playlist_id=playlist[0]: selectAndCloseSideBar(e, playlist_id, body, page, crnt_msc, crnt_artist)
             )
             playlists_buttons.append(button)
         criarPlaylistButton.visible = True
@@ -175,6 +177,7 @@ def main(page: ft.Page):
             bgcolor=colors.background_color
         ))
         body_column.update()
+
         page.update()
     def create_hover_handler(txt, icon):
         def handle_hover(e):
@@ -187,6 +190,8 @@ def main(page: ft.Page):
         body_column.controls.clear()
         body_column.controls.append(homePage.body(page))
         body_column.update()
+
+        toggle_sidebar(e)
         page.update()
     def set_user_pfp():
         response = userConfig.get_user_pfp()
@@ -321,10 +326,10 @@ def main(page: ft.Page):
                     bgcolor="#0A0A0A",
                 ),
                 ft.Column([
-                    ft.Text(musicCore.getTitle() if len(musicCore.getTitle()) < 100 else musicCore.getTitle()[:100] + "..."),
-                    ft.Text(musicCore.getArtist())
-                ], height=50, alignment=ft.alignment.center, expand=True),
-            ]),
+                    crnt_msc,
+                    crnt_artist
+                ], height=50, alignment=ft.alignment.center),
+            ],  width=int(10/100 * page.width)),
         ft.Column([
             ft.Row([
                 ft.ElevatedButton(content=ft.Icon(ft.Icons.SHUFFLE_SHARP), color="white", bgcolor="transparent", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=50))),
@@ -372,3 +377,4 @@ def main(page: ft.Page):
     page.add(main_column)
 
 ft.app(target=main)
+

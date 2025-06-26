@@ -83,7 +83,7 @@ def getDuration(id):
             return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
     return "00:00:00"
 
-def getPlaylistMusicsById(e, id, body, page):
+def getPlaylistMusicsById(e, id, body, page, crnt_msc, crnt_artist):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
     for playlists in playlist["playlistNames"]:
@@ -92,7 +92,7 @@ def getPlaylistMusicsById(e, id, body, page):
             if playlists[1] == "all":
                 body.content.controls.append(bodyContent.AllSongs(page))
             else:
-                body.content.controls.append(playlistContent.AllPlaylistSongs(page, id))
+                body.content.controls.append(playlistContent.AllPlaylistSongs(page, id, crnt_msc, crnt_artist))
             break
     body.content.update()
     body.update()
@@ -185,12 +185,11 @@ def getPhotoImage(path: str):
         if path.endswith(".mp3"):
             new_path = os.path.abspath(path.replace(".mp3", ".jpg"))
             if os.path.exists(new_path):
-                img = Image.open(new_path)
-                width, height = img.size
-                x = width // 2
-                y = 0
-                r, g, b = img.getpixel((x, y))
-                return '#{:02x}{:02x}{:02x}'.format(r, g, b)
+                    imagem = Image.open(new_path).convert('RGB')
+                    imagem = imagem.resize((100, 100))
+                    cores = imagem.getcolors(10000)
+                    cor_mais_comum = max(cores, key=lambda item: item[0])[1]
+                    return '#%02x%02x%02x' % cor_mais_comum
         return "No Image Found"
     return "#0A0A0A"
 

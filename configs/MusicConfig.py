@@ -5,7 +5,7 @@ import pygame
 import flet as ft
 
 fileJSON = os.path.join(os.path.abspath("configs/intFiles"), "Song.json")
-status = {"is_paused": None}
+status = {"is_paused": False, "is_playing": False}
 pygame.init()
 mixer = pygame.mixer
 
@@ -125,31 +125,33 @@ def getIndexByPath(path:  str):
         return f"Error: {e}"
 
 def playMusic(e, path: str):
-
     if not os.path.exists(path):
         return "Path given does not exists"
 
-    if path.endswith(".mp3"):
-        try:
-            mixer.music.load(path)
+    if not path.endswith(".mp3"):
+        return "Please, select a .mp3 file."
 
-            if status["is_paused"] == False:
-                mixer.pause()
-                status["is_paused"] = True
-            elif status["is_paused"] == True:
+    try:
+        if status["is_playing"]:
+            status["is_paused"] = False
+            if status["is_paused"] and not status["is_playing"]:
                 mixer.unpause()
                 status["is_paused"] = False
-            mixer.music.play()
-
-            if mixer.get_busy() == False:
-                status["is_paused"] = None
-
-            e.control.style.color = "#27e91d"
-            e.control = ft.Icon(ft.Icons.PAUSE_SHARP, color="white", size=20)
+                status["is_playing"] = True
+            elif status["is_playing"] and not status["is_paused"]:
+                mixer.pause()
+                status["is_paused"] = True
+                status["is_playing"] = False
             e.update()
-        except Exception as e:
-            return f"Error playing music: {e}"
-    return "Please, select a .mp3 file."
+            return
+
+        mixer.music.load(path)
+        mixer.music.play()
+        status["is_playing"] = True
+        e.control = ft.Icon(ft.Icons.PAUSE_SHARP, color="white", size=20)
+        e.update()
+    except Exception as ex:
+        return f"Error playing music: {ex}"
 
 def stopSong():
     if mixer.get_busy():

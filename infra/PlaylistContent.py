@@ -5,18 +5,17 @@ from tkinter import filedialog
 
 import pygame
 
+import configs.Core as core
 import configs.Colors as colors
 import configs.MusicConfig as musicConfig
 import configs.PlaylistConfig as playlistConfig
 import sysConf.Downloader as downloader
 
-import configs.Core as music
-
 def change_hover(e):
     e.control.bgcolor = colors.button_hover if e.data == "true" else colors.foreground_color
     e.control.update()
 
-def AllPlaylistSongs(page: ft.Page, id):
+def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist):
     ytLink = ft.TextField()
 
     imagePlaylist = ft.Image(src=musicConfig.getPathByIndex(0).replace(".mp3", ".jpg"), width=100, height=100, fit=ft.ImageFit.COVER)
@@ -227,7 +226,7 @@ def AllPlaylistSongs(page: ft.Page, id):
                                     elevation=0,
                                     padding=ft.Padding(top=0, left=0, right=5, bottom=0)
                                 ),
-                                on_click=lambda e, p=path: changeAndPlayMusic(e, p, e.control),
+                                on_click=lambda e, p=path: changeAndPlayMusic(e, p),
                             ),
                             playlistImage,
                             ft.Column([
@@ -261,12 +260,18 @@ def AllPlaylistSongs(page: ft.Page, id):
         currentPlaylistTitle.update()
         page.update()
         page.close(modal_change_playlist_name)
-    def changeAndPlayMusic(e, path, button):
-        if current_playing_path[0] == path:
-            music.setArtist("Nome Desconhecido")
-            return
+    def changeAndPlayMusic(e, path):
+
+        crnt_msc.value = getMusicName(os.path.basename(path).replace(".mp3", ""))
+        crnt_artist.value = getArtist(os.path.basename(path).replace(".mp3", ""))
+
+        crnt_msc.update()
+        crnt_artist.update()
+
         current_playing_path[0] = path
+
         musicConfig.playMusic(e, path)
+
         update_play_icons()
 
         allSongs.update()
