@@ -57,15 +57,16 @@ def download_mp3(e, video_url, idPlaylist):
     try:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
+        all_musics = []
         for line in process.stdout:
-            print(line, end='')
             if line.strip().endswith(".mp3"):
-                playlistConfig.addMusic(idPlaylist, line.strip())
-                page.update()
+                all_musics.append(line.strip())
 
         process.wait()
         if process.returncode == 0:
             print("\nBaixado!")
+            for music in all_musics:
+                playlistConfig.addMusic(idPlaylist, music)
             return True
         else:
             print(f"\nErro: {process.returncode}")
