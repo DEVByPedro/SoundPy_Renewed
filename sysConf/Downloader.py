@@ -64,12 +64,11 @@ def download_mp3(e, video_url, idPlaylist):
 
         process.wait()
         if process.returncode == 0:
-            print("\nBaixado!")
             for music in all_musics:
                 playlistConfig.addMusic(idPlaylist, music)
             return True
         else:
-            print(f"\nErro: {process.returncode}")
+            return False
     except Exception as e:
         print("Erro ao executar o comando:", e)
         return False

@@ -27,10 +27,47 @@ def AllPlaylistSongs(page: ft.Page, id):
 
     def downloadMusic(e, link, id):
         page.close(modal)
+        downloading_contents = ft.AlertDialog(
+            open=False,
+            modal=True,
+            title=ft.Text("Inicializando Downloads"),
+            bgcolor=colors.foreground_color,
+            content=ft.Column([
+                ft.Text("Baixando Musicas, aguarde."),
+                ft.ProgressBar(
+                    width=260,
+                    height=10,
+                    color="white",
+                    bgcolor=colors.background_color
+                )
+            ], tight=True),
+            alignment=ft.alignment.center,
+        )
+        page.open(downloading_contents)
         if downloader.download_mp3(e, ytLink.value, id) == True:
             allSongsContainer.controls.clear()
             insert_all_songs(limit[0])
             page.update()
+            page.close(downloading_contents)
+        else:
+            page.close(downloading_contents)
+            downloading_contents.title = ft.Text("Música não encontrada")
+            downloading_contents.content=ft.Column([
+                ft.Text("Link inválido ou inexistente.")],
+                tight=True)
+            downloading_contents.actions = [
+                ft.ElevatedButton(
+                    text="Ok",
+                    style=ft.ButtonStyle(
+                        shape=ft.RoundedRectangleBorder(radius=6),
+                        padding=ft.Padding(top=0, right=10, left=10, bottom=0),
+                        bgcolor="white",
+                        color="black"
+                    ),
+                    on_click=lambda e: page.close(downloading_contents)
+                )
+            ]
+            page.open(downloading_contents)
 
     modal_confirm = ft.AlertDialog(
         modal=True,
@@ -77,6 +114,12 @@ def AllPlaylistSongs(page: ft.Page, id):
             ),
             ft.ElevatedButton(
                 text="Cancelar",
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=6),
+                    padding=ft.Padding(top=0, right=10, left=10, bottom=0),
+                    bgcolor=colors.foreground_color,
+                    color="white"
+                ),
                 on_click=lambda e: page.close(modal)
             )
         ]
@@ -193,8 +236,10 @@ def AllPlaylistSongs(page: ft.Page, id):
                             ])
                         ], width=400),
                         ft.Container(
-                            ft.Column([ft.Row([ft.Text(musicConfig.getIndividualDuration(path)),],
-                                        width=400, alignment=ft.MainAxisAlignment.SPACE_BETWEEN)]),
+                            ft.Column([
+                                ft.Row([
+                                    ft.Text(musicConfig.getIndividualDuration(path))],
+                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN)]),
                             padding=ft.Padding(top=5, right=0, left=0, bottom=0))
                     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                     on_hover=change_hover,
@@ -410,12 +455,10 @@ def AllPlaylistSongs(page: ft.Page, id):
                     ], width=250,
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                     ),
-                    ft.Text("Duração", text_align=ft.TextAlign.CENTER),
-                    ft.Text("")
+                    ft.Row([ft.Icon(ft.Icons.HOURGLASS_BOTTOM, color="white", size=15)], width=30),
                 ],  alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                    padding=ft.Padding(top=10, left=0, bottom=0, right=-100),
                     bgcolor=colors.background_color,
-                    margin=ft.Margin(top=20, left=0, right=0, bottom=0)
+                padding=5
             ),
             ft.Container(
                 ft.Column([

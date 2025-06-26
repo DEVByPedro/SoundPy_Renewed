@@ -80,6 +80,13 @@ def main(page: ft.Page):
         alignment=ft.alignment.top_left,
     )
 
+    def selectAndCloseSideBar(e, playlist_id, body, page):
+        playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page)
+
+        toggle_sidebar(e)
+
+        page.update()
+
     def upgrade_playlist():
         playlists_buttons.clear()
         criarPlaylistButton.visible = True
@@ -99,7 +106,7 @@ def main(page: ft.Page):
                 height=50,
                 width=250,
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
-                on_click=lambda e, playlist_id=playlist[0]: playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page)
+                on_click=lambda e, playlist_id=playlist[0]: selectAndCloseSideBar(e, playlist_id, body, page)
             )
             playlists_buttons.append(button)
         criarPlaylistButton.visible = True
