@@ -83,7 +83,7 @@ def getDuration(id):
             return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
     return "00:00:00"
 
-def getPlaylistMusicsById(e, id, body, page, crnt_msc, crnt_artist):
+def getPlaylistMusicsById(e, id, body, page, crnt_msc, crnt_artist, crnt_img):
     with open(fileJSON, "r") as file:
         playlist = json.load(file)
     for playlists in playlist["playlistNames"]:
@@ -92,7 +92,7 @@ def getPlaylistMusicsById(e, id, body, page, crnt_msc, crnt_artist):
             if playlists[1] == "all":
                 body.content.controls.append(bodyContent.AllSongs(page))
             else:
-                body.content.controls.append(playlistContent.AllPlaylistSongs(page, id, crnt_msc, crnt_artist))
+                body.content.controls.append(playlistContent.AllPlaylistSongs(page, id, crnt_msc, crnt_artist, crnt_img))
             break
     body.content.update()
     body.update()

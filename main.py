@@ -1,3 +1,6 @@
+from flet.core.types import \
+    ImageFit
+
 import setup.bin.InstallDependencies as insDep
 import setup.bin.CreateJSONS as createJSONs
 insDep.installDependencies()
@@ -14,6 +17,7 @@ import flet as ft
 
 crnt_msc = ft.Text("", size=16, color="white")
 crnt_artist = ft.Text("", size=12, color="grey")
+crnt_img = ft.Image(src="na/na", fit=ImageFit.COVER)
 
 def main(page: ft.Page):
     page.padding = 0
@@ -82,8 +86,8 @@ def main(page: ft.Page):
         alignment=ft.alignment.top_left,
     )
 
-    def selectAndCloseSideBar(e, playlist_id, body, page, crnt_msc, crnt_artist):
-        playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page, crnt_msc, crnt_artist)
+    def selectAndCloseSideBar(e, playlist_id, body, page, crnt_msc, crnt_artist, crnt_img):
+        playlistConfig.getPlaylistMusicsById(e, playlist_id, body, page, crnt_msc, crnt_artist, crnt_img)
 
         toggle_sidebar(e)
 
@@ -108,7 +112,7 @@ def main(page: ft.Page):
                 height=50,
                 width=250,
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
-                on_click=lambda e, playlist_id=playlist[0]: selectAndCloseSideBar(e, playlist_id, body, page, crnt_msc, crnt_artist)
+                on_click=lambda e, playlist_id=playlist[0]: selectAndCloseSideBar(e, playlist_id, body, page, crnt_msc, crnt_artist, crnt_img)
             )
             playlists_buttons.append(button)
         criarPlaylistButton.visible = True
@@ -324,6 +328,7 @@ def main(page: ft.Page):
                     width=70,
                     height=70,
                     bgcolor="#0A0A0A",
+                    content=crnt_img
                 ),
                 ft.Column([
                     crnt_msc,

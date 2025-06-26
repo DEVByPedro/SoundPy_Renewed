@@ -3,9 +3,10 @@ from mutagen.mp3 import MP3
 import os
 import pygame
 import flet as ft
+import configs.PlaylistConfig as playlistConfig
 
 fileJSON = os.path.join(os.path.abspath("configs/intFiles"), "Song.json")
-status = {"is_paused": False, "is_playing": False}
+status = {"is_paused": False, "is_playing": False, "current_index": None}
 pygame.init()
 mixer = pygame.mixer
 
@@ -124,7 +125,7 @@ def getIndexByPath(path:  str):
     except Exception as e:
         return f"Error: {e}"
 
-def playMusic(e, path: str):
+def playMusic(e, path: str, id):
     if not os.path.exists(path):
         return "Path given does not exists"
 
@@ -134,6 +135,8 @@ def playMusic(e, path: str):
     try:
         if status["is_playing"]:
             status["is_paused"] = False
+            if status["current_index"] != playlistConfig.getIndexByPath(id, path):
+                print("diferente")
             if status["is_paused"] and not status["is_playing"]:
                 mixer.unpause()
                 status["is_paused"] = False
@@ -148,6 +151,12 @@ def playMusic(e, path: str):
         mixer.music.load(path)
         mixer.music.play()
         status["is_playing"] = True
+        status["is_paused"] = False
+        status["current_index"] = playlistConfig.getIndexByPath(id, path)
+
+        print(playlistConfig.getIndexByPath(id, path))
+        print(status["current_index"])
+
         e.control = ft.Icon(ft.Icons.PAUSE_SHARP, color="white", size=20)
         e.update()
     except Exception as ex:

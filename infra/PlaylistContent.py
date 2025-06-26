@@ -15,7 +15,7 @@ def change_hover(e):
     e.control.bgcolor = colors.button_hover if e.data == "true" else colors.foreground_color
     e.control.update()
 
-def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist):
+def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist, crnt_img):
     ytLink = ft.TextField()
 
     imagePlaylist = ft.Image(src=musicConfig.getPathByIndex(0).replace(".mp3", ".jpg"), width=100, height=100, fit=ft.ImageFit.COVER)
@@ -264,13 +264,14 @@ def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist):
 
         crnt_msc.value = getMusicName(os.path.basename(path).replace(".mp3", ""))
         crnt_artist.value = getArtist(os.path.basename(path).replace(".mp3", ""))
+        crnt_img.src = path.replace(".mp3", ".jpg")
 
         crnt_msc.update()
         crnt_artist.update()
 
         current_playing_path[0] = path
 
-        musicConfig.playMusic(e, path)
+        musicConfig.playMusic(e, path, id)
 
         update_play_icons()
 
