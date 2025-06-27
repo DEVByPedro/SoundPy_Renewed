@@ -1,3 +1,4 @@
+import asyncio
 import os.path
 import flet as ft
 import tkinter as tk
@@ -5,7 +6,6 @@ from tkinter import filedialog
 
 import pygame
 
-import configs.Core as core
 import configs.Colors as colors
 import configs.MusicConfig as musicConfig
 import configs.PlaylistConfig as playlistConfig
@@ -134,6 +134,9 @@ def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist, crnt_img):
     music_checkboxes = []
     limit = [40]
     current_playing_path = [None]
+
+    music_queue = []
+    current_index = 0
 
     def getMusicName(path: str):
         count = path.count("-")
@@ -264,7 +267,28 @@ def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist, crnt_img):
         currentPlaylistTitle.update()
         page.update()
         page.close(modal_change_playlist_name)
+    def on_music_end():
+        global current_index
+        current_index += 1
+
+        if current_index < len(music_queue):
+            mixer.music.load(music_queue[current_index])
+            mixer.music.play()
+            update_play_icons()
+    def init_music_event_loop(page):
+        MUSIC_END = pygame.USEREVENT + 1
+        mixer.music.set_endevent(MUSIC_END)
+
+        def check_music_event(e):
+            for event in pygame.event.get():
+                if event.type == MUSIC_END:
+                    on_music_end()
+            page.update()
+
+        page.on_interval = check_music_event
+        page.update()
     def changeAndPlayMusic(e, path):
+        global music_queue, current_index
 
         crnt_msc.value = getMusicName(os.path.basename(path).replace(".mp3", ""))
         crnt_artist.value = getArtist(os.path.basename(path).replace(".mp3", ""))
@@ -274,11 +298,23 @@ def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist, crnt_img):
         crnt_artist.update()
 
         current_playing_path[0] = path
-
         mixer.music.set_volume(0.5)
-        musicConfig.playMusic(e, path, id)
 
-        update_play_icons()
+        currentId = playlistConfig.getIndexByPath(id, path)
+
+        musics = []
+        for idx in range(len(playlistConfig.get_all_playlist_musics(id, limit[0]))):
+            if idx >= currentId:
+                musics.append(playlistConfig.getMusicByIndex(id, idx))
+
+        print(musics)
+        music_queue = musics
+        current_index = 0
+
+        if music_queue:
+            mixer.music.load(music_queue[0])
+            mixer.music.play()
+            update_play_icons()
 
         allSongs.update()
         page.update()

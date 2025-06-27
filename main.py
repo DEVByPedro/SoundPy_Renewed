@@ -93,7 +93,6 @@ def main(page: ft.Page):
         toggle_sidebar(e)
 
         page.update()
-
     def upgrade_playlist():
         playlists_buttons.clear()
         criarPlaylistButton.visible = True
@@ -184,13 +183,6 @@ def main(page: ft.Page):
         body_column.update()
 
         page.update()
-    def create_hover_handler(txt, icon):
-        def handle_hover(e):
-            txt.color = colors.text_secondary if e.data == "true" else colors.text_primary
-            icon.color = colors.text_secondary if e.data == "true" else colors.text_primary
-            txt.update()
-            icon.update()
-        return handle_hover
     def show_mainMenu(e):
         body_column.controls.clear()
         body_column.controls.append(homePage.body(page))
@@ -257,7 +249,6 @@ def main(page: ft.Page):
                 height=40,
                 animate_scale=200,
                 on_click=action,
-                on_hover=create_hover_handler(text, icon),
             )
         )
     buttons.append(submenu)
