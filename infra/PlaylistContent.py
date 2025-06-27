@@ -16,6 +16,7 @@ def change_hover(e):
     e.control.update()
 
 def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist, crnt_img):
+
     ytLink = ft.TextField()
 
     imagePlaylist = ft.Image(src=musicConfig.getPathByIndex(0).replace(".mp3", ".jpg"), width=100, height=100, fit=ft.ImageFit.COVER)
@@ -332,7 +333,7 @@ def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist, crnt_img):
 
     currentPlaylistTitle = ft.Text(playlistConfig.getPlaylistNameByIndex(id) + ":", size=34, weight=ft.FontWeight.W_500)
     durTot                       = ft.Text("Duração: " + playlistConfig.getDuration(id))
-    nameTxtField           = ft.TextField(value=playlistConfig.getPlaylistNameByIndex(id), color="white", border_color="white", on_submit=on_save_click)
+    nameTxtField           = ft.TextField(value=playlistConfig.getPlaylistNameByIndex(id), color="white", border_color="white", on_submit=on_save_click, autofocus=True)
 
     modal_change_playlist_name = ft.AlertDialog(
         modal=True,

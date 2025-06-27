@@ -89,10 +89,7 @@ def getPlaylistMusicsById(e, id, body, page, crnt_msc, crnt_artist, crnt_img):
     for playlists in playlist["playlistNames"]:
         if playlists[0] == id:
             body.content.controls.clear()
-            if playlists[1] == "all":
-                body.content.controls.append(bodyContent.AllSongs(page))
-            else:
-                body.content.controls.append(playlistContent.AllPlaylistSongs(page, id, crnt_msc, crnt_artist, crnt_img))
+            body.content.controls.append(playlistContent.AllPlaylistSongs(page, id, crnt_msc, crnt_artist, crnt_img))
             break
     body.content.update()
     body.update()

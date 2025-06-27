@@ -133,30 +133,28 @@ def playMusic(e, path: str, id):
         return "Please, select a .mp3 file."
 
     try:
-        if status["is_playing"]:
-            status["is_paused"] = False
-            if status["current_index"] != playlistConfig.getIndexByPath(id, path):
-                print("diferente")
-            if status["is_paused"] and not status["is_playing"]:
-                mixer.unpause()
-                status["is_paused"] = False
-                status["is_playing"] = True
-            elif status["is_playing"] and not status["is_paused"]:
-                mixer.pause()
+        new_index = playlistConfig.getIndexByPath(id, path)
+
+        if status["current_index"] == new_index:
+            if status["is_playing"]:
+                mixer.music.pause()
                 status["is_paused"] = True
                 status["is_playing"] = False
+                e.control = ft.Icon(ft.Icons.PLAY_ARROW_SHARP, color="white", size=20)
+            elif status["is_paused"]:
+                mixer.music.unpause()
+                status["is_paused"] = False
+                status["is_playing"] = True
+                e.control = ft.Icon(ft.Icons.PAUSE_SHARP, color="white", size=20)
             e.update()
             return
 
+        mixer.music.stop()
         mixer.music.load(path)
         mixer.music.play()
         status["is_playing"] = True
         status["is_paused"] = False
-        status["current_index"] = playlistConfig.getIndexByPath(id, path)
-
-        print(playlistConfig.getIndexByPath(id, path))
-        print(status["current_index"])
-
+        status["current_index"] = new_index
         e.control = ft.Icon(ft.Icons.PAUSE_SHARP, color="white", size=20)
         e.update()
     except Exception as ex:

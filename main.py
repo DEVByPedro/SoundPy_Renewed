@@ -37,6 +37,7 @@ def main(page: ft.Page):
         title=ft.Text("Criar Playlist:"),
         content=ft.TextField(hint_text="Nome da Playlist",
                              border_color=colors.text_primary,
+                             autofocus=True,
                              on_submit=lambda e: [
                                 playlistConfig.add_playlist(playlist_modal.content.value),
                                 page.close(playlist_modal),
@@ -46,8 +47,8 @@ def main(page: ft.Page):
         actions=[
             ft.ElevatedButton(
                 text="Criar",
-                bgcolor=colors.foreground_color,
-                color="white",
+                bgcolor="white",
+                color="black",
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)),
                 on_click=lambda e: [
                     playlistConfig.add_playlist(playlist_modal.content.value),
