@@ -9,11 +9,11 @@ createJSONs.createJsonSetup()
 import configs.UserConfig as userConfig
 import configs.PlaylistConfig as playlistConfig
 import configs.Colors as colors
-import configs.Core as core
 
 import infra.Home as homePage
 
 import flet as ft
+import pygame
 
 crnt_msc = ft.Text("", size=16, color="white")
 crnt_artist = ft.Text("", size=12, color="grey")
@@ -216,6 +216,8 @@ def main(page: ft.Page):
     def change_opacity(e):
         changeButton.opacity = 0.7 if e.data == "true" else 0
         changeButton.update()
+    def change_volume(e):
+        pygame.mixer.music.set_volume(e.control.value)
 
     menu_items = [
         ("Menu", ft.Icons.MENU_SHARP, toggle_sidebar),
@@ -350,11 +352,16 @@ def main(page: ft.Page):
                 active_color="white"
             )
         ], alignment=ft.MainAxisAlignment.CENTER),
-        ft.Slider(
+        ft.Row([
+            ft.Icon(ft.Icons.VOLUME_UP, color="white"),
+            ft.Slider(
             width=150,
             height=5,
-            active_color="white"
+            value=0.5,
+            active_color="white",
+            on_change=change_volume
         )
+        ]),
     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         expand=True
     )

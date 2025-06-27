@@ -10,6 +10,9 @@ import configs.Colors as colors
 import configs.MusicConfig as musicConfig
 import configs.PlaylistConfig as playlistConfig
 import sysConf.Downloader as downloader
+from configs.MusicConfig import \
+    mixer
+
 
 def change_hover(e):
     e.control.bgcolor = colors.button_hover if e.data == "true" else colors.foreground_color
@@ -272,6 +275,7 @@ def AllPlaylistSongs(page: ft.Page, id, crnt_msc, crnt_artist, crnt_img):
 
         current_playing_path[0] = path
 
+        mixer.music.set_volume(0.5)
         musicConfig.playMusic(e, path, id)
 
         update_play_icons()
